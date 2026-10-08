@@ -24,22 +24,55 @@ html, body { overflow-x: clip; }
 #bottom-navigation { position: absolute; bottom: 4vh; width: 100%; display: flex; justify-content: center; align-items: center; gap: 4vw; pointer-events: auto; z-index: 105; }
 .nav-icon { background: none !important; border: none !important; outline: none !important; box-shadow: none !important; -webkit-appearance: none; appearance: none; padding: 0; cursor: pointer; transition: transform 0.2s cubic-bezier(0.3, 2, 0.4, 1), filter 0.2s; }
 .nav-icon img { background: none !important; width: 65px; height: auto; display: block; filter: drop-shadow(0px 8px 6px rgba(0,0,0,0.6)); }
-.nav-icon:hover { transform: scale(1.15) rotate(3deg); filter: brightness(1.2); }
-.nav-icon:active { transform: scale(0.9); }
-
-/* STICKERS HOME */
-.draggable-sticker { position: absolute; cursor: grab; user-select: none; -webkit-user-drag: none; touch-action: none; transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1); left: var(--x-desktop); top: var(--y-desktop); transform: rotate(var(--rot-desktop)); }
-.draggable-sticker:active { transform: rotate(var(--rot-desktop)) scale(1.08); }
-
 @media (max-width: 660px) {
     .curtain.top { height: 50px; }
     .curtain.left, .curtain.right { width: 20%; height: 100%; }
-    .curtain.left { background-position: right top; }
+    .curtain.left  { background-position: right top; }
     .curtain.right { background-position: left top; }
     #bottom-navigation { gap: 2.5vw; bottom: 3vh; }
     #bottom-navigation .nav-icon img { width: 38px; }
 }
+.nav-icon:hover { transform: scale(1.15) rotate(3deg); filter: brightness(1.2); }
+.nav-icon:active { transform: scale(0.9); }
+
+/* STICKERS HOME */
+.draggable-sticker {
+    position: absolute;
+    display: block;
+    z-index: 50;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: none;
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
+    
+    left: var(--x-desktop);
+    top: var(--y-desktop);
+    transform: rotate(var(--rot-desktop));
+    
+    /* La dimensione ora è assoluta, dettata esclusivamente dai tuoi pixel */
+    width: var(--w-desktop, 150px);
+    height: auto;
+    min-width: unset; /* Rimuoviamo l'interferenza elastica */
+    max-width: none; 
+}
+
+.draggable-sticker:active {
+    transform: rotate(var(--rot-desktop)) scale(1.08);
+}
+
 @media (max-width: 768px) {
-    .draggable-sticker { left: var(--x-mobile); top: var(--y-mobile); transform: rotate(var(--rot-mobile)); }
-    .draggable-sticker:active { transform: rotate(var(--rot-mobile)) scale(1.08); }
+    .draggable-sticker {
+        left: var(--x-mobile);
+        top: var(--y-mobile);
+        transform: rotate(var(--rot-mobile));
+        
+        /* Dimensione assoluta anche per schermi stretti */
+        width: var(--w-mobile, 150px); 
+        min-width: unset;
+    }
+
+    .draggable-sticker:active {
+        transform: rotate(var(--rot-mobile)) scale(1.08);
+    }
 }

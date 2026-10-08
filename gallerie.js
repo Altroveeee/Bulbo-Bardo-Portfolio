@@ -71,7 +71,7 @@ function galleryRect(fig) { const img = fig.querySelector('img'); const r = img.
 function openIllustration(fig, gal, itemData) {
     if (busy) return; busy = true; const s = galleryRect(fig); const ar = (s.img.naturalWidth && s.img.naturalHeight) ? s.img.naturalWidth / s.img.naturalHeight : s.img.offsetWidth / s.img.offsetHeight;
     const view = prepareIllus(itemData, ar); const t = view.target; const fly = makeFly(s.img.src, t); s.img.style.visibility = 'hidden'; fig.querySelector('.gal-note')?.classList.add('texts-hidden');
-    const flyAnim = fly.animate([{ transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w}) rotate(${s.rot}deg)`, filter: SHELF_SHADOW }, { transform: 'none', filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' }], { duration: 700, delay: 150, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' });
+    const flyAnim = fly.animate([{ transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w}) rotate(${s.rot}deg)` }, { transform: 'none', filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' }], { duration: 700, delay: 150, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' });
     const out = slideEls([gal], 'out', 100);
     Promise.all([flyAnim.finished, out.finished]).then(async () => { openState = { categoria: 'illustrazioni', itemData, index: +fig.dataset.index, ar, target: t, scroll: gal.scrollLeft }; await revealBook(view); fly.remove(); busy = false; });
 }
@@ -100,6 +100,6 @@ async function closeIllustration() {
     const fly = makeFly('immagini/' + itemData.src, t); viewport.querySelectorAll('.illus-view, .back-arrow').forEach(n => n.remove());
     const gal = buildGallery(siteData.illustrazioni, galleryLayout); viewport.appendChild(gal); const fig = gal.querySelector(`.gal-item[data-index="${index}"]`); const note = fig.querySelector('.gal-note'); if (note) note.classList.add('texts-hidden'); fig.querySelector('img').style.visibility = 'hidden'; gal.style.visibility = 'hidden';
     await Promise.all([...gal.querySelectorAll('img')].map(i => i.decode().catch(() => {}))); gal.scrollLeft = scroll; gal.style.visibility = '';
-    const s = galleryRect(fig); const inn = slideEls([gal], 'in'); const flyAnim = fly.animate([{ transform: 'none', filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' }, { transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w}) rotate(${s.rot}deg)`, filter: SHELF_SHADOW }], { duration: SHELF_IN_MS, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
+    const s = galleryRect(fig); const inn = slideEls([gal], 'in'); const flyAnim = fly.animate([{ transform: 'none', filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' }, { transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w}) rotate(${s.rot}deg)` }], { duration: SHELF_IN_MS, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
     Promise.all([flyAnim.finished, inn.finished]).then(() => { s.img.style.visibility = ''; if (note) note.classList.remove('texts-hidden'); fly.remove(); busy = false; });
 }

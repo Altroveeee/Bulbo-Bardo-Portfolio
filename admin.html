@@ -35,8 +35,6 @@
         .guide-step strong { color: #00f7ff; background: #ff0000; padding: 0 4px; }
 
         .admin-box { background: #000080; color: #00ff00; padding: 20px; max-width: 600px; margin: 0 auto 30px; border: 10px groove #00ff00; box-shadow: 10px 10px 0 #000; }
-        .admin-box.fumetto { background: #800000; color: #ffff00; border: 10px groove #ff9800; }
-        .admin-box.sticker { background: #004040; color: #ff69b4; border: 10px groove #ff69b4; }
         .admin-box h2 { text-align: center; background: #000; border: 3px dashed currentColor; padding: 6px; }
         label { font-weight: bold; text-decoration: underline; }
 
@@ -57,7 +55,6 @@
         button.btn-sticker { background: #ff69b4; }
         button::before { content: "★ "; } button::after { content: " ★"; }
 
-        .note { font-size: 12px; color: #aaa; margin-top: -15px; margin-bottom: 20px; display: block; }
         .flex-row { display: flex; gap: 15px; }
 
         .drop-zone { border: 4px dashed #ff0000; padding: 20px; text-align: center; color: #000; background: #ffff00; font-weight: bold; cursor: default; margin-bottom: 8px; transition: all 0.2s; }
@@ -76,6 +73,95 @@
             border: 8px dotted #ffff00; border-top: 8px solid #00ffff; border-radius: 50%;
             width: 70px; height: 70px; animation: spin 0.6s linear infinite; margin-bottom: 20px;
         }
+
+        /* ===== GESTIONE CONTENUTI ===== */
+        .admin-box.gestione { background: #2b0057; color: #00ffff; border: 10px groove #ffee00; max-width: 760px; }
+        .tabs { display: flex; gap: 6px; margin-bottom: 15px; }
+        .tab { flex: 1; padding: 8px 4px; font-size: 14px; border-width: 4px; background: #c0c0c0; }
+        .tab::before, .tab::after { content: none; }
+        .tab.active { background: #ffff00; color: #f00; border-style: inset; }
+
+        .hint { background: #000; color: #fff; border: 2px dotted #ffee00; padding: 6px 10px; font-size: 13px; margin: 0 0 15px 0; line-height: 1.4; }
+        .vuoto { text-align: center; color: #ff0; font-size: 18px; padding: 20px; border: 3px dashed #ff69b4; }
+
+        .item-row { display: flex; gap: 8px; align-items: center; background: #000; color: #00ff00; border: 3px ridge #ff69b4; padding: 8px; margin-bottom: 10px; transition: all 0.15s; }
+        .item-row.small { padding: 4px 6px; margin-bottom: 6px; border-width: 2px; }
+        .item-row.dragging { opacity: 0.35; }
+        .item-row.over { border-color: #ffff00; background: #330066; transform: scale(1.02) rotate(-0.5deg); }
+        .num { color: #ffff00; font-weight: bold; min-width: 3ch; text-align: right; }
+        .handle { cursor: grab; font-size: 24px; color: #ff0; user-select: none; padding: 0 4px; }
+        .handle:active { cursor: grabbing; }
+        .thumb { width: 72px; height: 72px; object-fit: contain; background: #111; border: 2px inset #808080; flex: none; }
+        .item-row.small .thumb { width: 44px; height: 44px; }
+        .item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .item-body.hor { flex-direction: row; align-items: center; gap: 10px; }
+        .item-body input, .item-body textarea, .item-body select { margin: 0; padding: 5px; font-size: 13px; }
+        .item-body textarea { resize: vertical; }
+        .fname { font-size: 11px; color: #aaa; font-family: "Courier New", monospace; word-break: break-all; }
+
+        .ctrl { display: flex; flex-direction: column; gap: 3px; flex: none; }
+        .item-row.small .ctrl { flex-direction: row; }
+        .row-btn { width: 36px; padding: 2px 0; font-size: 15px; border-width: 3px; text-transform: none; }
+        .row-btn::before, .row-btn::after { content: none; }
+        .row-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+        .row-btn:disabled:hover { background: #c0c0c0; color: #000080; }
+        .row-btn.del { background: #ff0000; color: #fff; }
+        .row-btn.del:hover { background: #ffff00; color: #f00; }
+
+        details.pagine { margin-top: 4px; background: #1a0033; border: 2px dotted #ff9800; padding: 4px 8px; }
+        details.pagine summary { cursor: pointer; color: #ffff00; font-weight: bold; font-size: 13px; }
+        .pagine-box { margin-top: 8px; }
+
+        /* Il grande + sotto la lista */
+        button.btn-piu { font-size: 38px; line-height: 1; padding: 4px 0 8px; margin: 4px 0 18px; background: #000; color: #ffee00; border: 4px dashed #ff69b4; text-shadow: 2px 2px 0 #f0f; }
+        button.btn-piu::before, button.btn-piu::after { content: none; }
+        button.btn-piu:hover { background: #ffff00; color: #f00; border-color: #f00; }
+        button.btn-piu.aperto { background: #ff69b4; color: #000; border-style: solid; }
+
+        /* Pannelli "aggiungi" (uno per sezione, si aprono col +) */
+        .pannello { display: none; margin: 0 0 20px; padding: 15px; border: 6px groove #ff69b4; background: #004040; color: #ff69b4; }
+        .pannello.singola { background: #000080; color: #00ff00; border-color: #00ff00; }
+        .pannello.fumetto { background: #800000; color: #ffff00; border-color: #ff9800; }
+        .pannello h3 { margin: 0 0 15px; text-align: center; background: #000; border: 3px dashed currentColor; padding: 5px; text-shadow: 2px 2px 0 #000; }
+        .solo-shop { display: none; }
+
+        /* Anteprima sticker: schermo in scala reale */
+        .mappe { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-start; margin-bottom: 8px; }
+        .mappa-pc { flex: 2 1 340px; min-width: 0; }
+        .mappa-tel { flex: 1 1 190px; max-width: 250px; min-width: 0; }
+        .mappe label.sub { display: block; font-size: 11px; color: #aaa; text-decoration: none; margin-bottom: 3px; }
+        .schermo { position: relative; width: 100%; background: #161616; border: 2px solid #555; border-radius: 5px; overflow: hidden; box-sizing: border-box; }
+        .schermo.pc { aspect-ratio: 1440 / 800; }
+        .schermo.tel { aspect-ratio: 390 / 780; }
+        .schermo img.st { position: absolute; height: auto; max-width: none; user-select: none; -webkit-user-drag: none; transform-origin: center center; }
+        .schermo img.st.vecchio { opacity: 0.4; pointer-events: none; }
+        .schermo img.st.nuovo { z-index: 50; cursor: grab; touch-action: none; outline: 2px dashed #2196F3; }
+        .schermo.tel img.st.nuovo { outline-color: #e91e63; }
+        .zona { position: absolute; pointer-events: none; z-index: 60; background: rgba(170, 0, 0, 0.30); border: 1px dashed rgba(255, 120, 120, 0.7); box-sizing: border-box; }
+        .zona.nav { background: rgba(255, 255, 255, 0.10); border-color: rgba(255, 255, 255, 0.5); }
+        .schermo.pc .zona.sopra { top: 0; left: 0; right: 0; height: 7.5%; }
+        .schermo.pc .zona.sx { top: 0; bottom: 0; left: 0; width: 25%; }
+        .schermo.pc .zona.dx { top: 0; bottom: 0; right: 0; width: 25%; }
+        .schermo.pc .zona.nav { left: 25%; right: 25%; bottom: 4%; height: 8.1%; }
+        .schermo.tel .zona.sopra { top: 0; left: 0; right: 0; height: 6.4%; }
+        .schermo.tel .zona.sx { top: 0; bottom: 0; left: 0; width: 20%; }
+        .schermo.tel .zona.dx { top: 0; bottom: 0; right: 0; width: 20%; }
+        .schermo.tel .zona.nav { left: 20%; right: 20%; bottom: 3%; height: 4.9%; }
+        .campi-num { display: flex; gap: 5px; margin-top: 5px; }
+        .campi-num label { flex: 1; min-width: 0; font-size: 10px; color: #aaa; text-decoration: none; }
+        .campi-num input { margin: 2px 0 0; padding: 4px; font-size: 13px; }
+        .nota { font-size: 12px; color: #ccc; margin: 4px 0 18px; line-height: 1.4; }
+
+        /* Anteprima fumetto a libro aperto */
+        #fumetto-preview-area { width: 100%; background: #111; border: 2px solid #555; border-radius: 5px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; }
+        #fumetto-placeholder-testo { display: block; color: #666; font-size: 13px; text-align: center; }
+        .spread { display: flex; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .spread .cell { flex: 1 1 50%; width: 50%; min-height: 60px; background: #fff; border: 1px solid rgba(0,0,0,0.3); box-sizing: border-box; display: flex; }
+        .spread .cell.vuota { background: transparent; border-color: transparent; }
+        .spread .cell img { width: 100%; height: auto; display: block; margin: auto; }
+
+        #dirty-flag { display: none; background: #ff0000; color: #ffff00; border: 3px ridge #ffff00; text-align: center; font-weight: bold; padding: 6px; margin-bottom: 15px; }
+        button.btn-gestione { background: #ffee00; }
     </style>
 </head>
 <body>
@@ -101,91 +187,121 @@
     <div class="guide-box">
         <h2>Guida Rapida per Aggiornare il Sito</h2>
         <div class="guide-step"><strong>1. Sposta le immagini:</strong> Metti SEMPRE le nuove foto o i disegni dentro la cartella "immagini" del sito prima di iniziare.</div>
-        <div class="guide-step"><strong>2. Trascina:</strong> Prendi l'immagine dal tuo computer e trascinala nei riquadri tratteggiati qui sotto. Il sistema copierà il nome da solo.</div>
-        <div class="guide-step"><strong>3. Esporta:</strong> Clicca sul pulsante "Genera file dati.js" alla fine del blocco che hai usato.</div>
-        <div class="guide-step"><strong>4. Sostituisci:</strong> Il computer ti scaricherà un file. Prendilo, trascinalo nella cartella principale del sito e scegli "Sostituisci". Fatto!</div>
+        <div class="guide-step"><strong>2. Scegli la scheda:</strong> Sticker, Illustrazioni, Shop o Fumetti. Vedi tutto quello che c'è nel sito in quella sezione.</div>
+        <div class="guide-step"><strong>3. Modifica:</strong> trascina ☰ (o usa ▲▼) per l'ordine, ✖ per togliere, scrivi nei campi per cambiare i testi. Per aggiungere premi il grande <b>+</b> sotto la lista, trascina l'immagine nel riquadro tratteggiato e premi "Aggiungi alla lista".</div>
+        <div class="guide-step"><strong>4. Esporta:</strong> In fondo clicca "Genera file dati.js".</div>
+        <div class="guide-step"><strong>5. Sostituisci:</strong> Il computer ti scaricherà un file. Prendilo, trascinalo nella cartella principale del sito e scegli "Sostituisci". Fatto!</div>
     </div>
 
-    <!-- MODULO 1: STICKERS DELLA HOME -->
-    <div class="admin-box sticker">
-        <h2>✨ 1. Aggiungi uno Sticker ✨</h2>
-        <label>Immagine dello sticker:</label>
-        <div class="drop-zone" id="drop-sticker">Trascina qui l'immagine</div>
-        <input type="text" id="sticker-img" placeholder="es: maschera.png">
+    <!-- GESTIONE CONTENUTI: tutto in un posto -->
+    <div class="admin-box gestione">
+        <h2>🛠️ Gestisci contenuti 🛠️</h2>
+        <div class="tabs">
+            <button class="tab" data-sez="stickers"></button>
+            <button class="tab" data-sez="illustrazioni"></button>
+            <button class="tab" data-sez="personaggi"></button>
+            <button class="tab" data-sez="fumetti"></button>
+        </div>
+        <div id="dirty-flag"><span class="blink">⚠️</span> Hai modifiche non salvate! Clicca "Genera file dati.js" qui sotto <span class="blink">⚠️</span></div>
+        <div id="gestione-hint" class="hint"></div>
+        <div id="gestione-lista"></div>
 
-        <label>Posiziona lo sticker (Trascinalo nelle due mappe!)</label>
-        <div class="flex-row" style="margin-bottom: 15px;">
-            <div style="flex: 2;">
-                <label style="font-size: 11px; color: #aaa;">💻 Schermo Computer</label>
-                <div id="sticker-preview-desktop" style="position: relative; width: 100%; height: 180px; background: #111; border: 2px solid #555; border-radius: 5px; overflow: hidden;">
-                    <img id="nuovo-sticker-desktop" style="display: none; position: absolute; width: 40px; cursor: grab; border: 2px dashed #2196F3; z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(0deg);">
+        <button id="btn-piu" class="btn-piu" title="Aggiungi">+</button>
+
+        <!-- PANNELLO: nuovo STICKER -->
+        <div class="pannello" id="pannello-stickers">
+            <h3>✨ Nuovo sticker ✨</h3>
+            <label>Immagine dello sticker:</label>
+            <div class="drop-zone" id="drop-sticker">Trascina qui l'immagine</div>
+            <input type="text" id="sticker-img" placeholder="es: maschera.png">
+
+            <label>Nome (solo per riconoscerlo, facoltativo):</label>
+            <input type="text" id="sticker-nome" placeholder="es: drago blu">
+
+            <label>Posiziona lo sticker (trascinalo negli schermi!)</label>
+            <div class="mappe">
+                <div class="mappa-pc">
+                    <label class="sub">💻 Computer (schermo 1440×800)</label>
+                    <div class="schermo pc" id="sticker-preview-desktop">
+                        <img id="nuovo-sticker-desktop" class="st nuovo" alt="" draggable="false" style="display: none;">
+                        <div class="zona sopra"></div><div class="zona sx"></div><div class="zona dx"></div><div class="zona nav"></div>
+                    </div>
+                    <div class="campi-num">
+                        <label>X %<input type="number" id="sticker-x" step="0.1" value="40"></label>
+                        <label>Y %<input type="number" id="sticker-y" step="0.1" value="40"></label>
+                        <label>Gradi°<input type="number" id="sticker-rot" step="1" value="0"></label>
+                        <label>Largh. px<input type="number" id="sticker-w" min="1" value="150"></label>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 5px; margin-top: 5px;">
-                    <input type="number" id="sticker-x" placeholder="X" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
-                    <input type="number" id="sticker-y" placeholder="Y" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
-                    <input type="number" id="sticker-rot" placeholder="Gradi°" value="0" style="margin: 0; padding: 5px; width: 70px;">
+                <div class="mappa-tel">
+                    <label class="sub">📱 Telefono (schermo 390×780)</label>
+                    <div class="schermo tel" id="sticker-preview-mobile">
+                        <img id="nuovo-sticker-mobile" class="st nuovo" alt="" draggable="false" style="display: none;">
+                        <div class="zona sopra"></div><div class="zona sx"></div><div class="zona dx"></div><div class="zona nav"></div>
+                    </div>
+                    <div class="campi-num">
+                        <label>X %<input type="number" id="sticker-x-mobile" step="0.1" value="35"></label>
+                        <label>Y %<input type="number" id="sticker-y-mobile" step="0.1" value="40"></label>
+                        <label>Gradi°<input type="number" id="sticker-rot-mobile" step="1" value="0"></label>
+                        <label>Largh. px<input type="number" id="sticker-w-mobile" min="1" value="100"></label>
+                    </div>
                 </div>
             </div>
-            <div style="flex: 1;">
-                <label style="font-size: 11px; color: #aaa;">📱 Schermo Telefono</label>
-                <div id="sticker-preview-mobile" style="position: relative; width: 100%; height: 180px; background: #111; border: 2px solid #555; border-radius: 5px; overflow: hidden;">
-                    <img id="nuovo-sticker-mobile" style="display: none; position: absolute; width: 30px; cursor: grab; border: 2px dashed #e91e63; z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(0deg);">
-                </div>
-                <div style="display: flex; gap: 5px; margin-top: 5px;">
-                    <input type="number" id="sticker-x-mobile" placeholder="X" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
-                    <input type="number" id="sticker-y-mobile" placeholder="Y" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
-                    <input type="number" id="sticker-rot-mobile" placeholder="Gradi°" value="0" style="margin: 0; padding: 5px; width: 70px;">
-                </div>
+            <p class="nota">Gli schermi sono in scala reale: lo sticker qui ha la stessa grandezza e posizione che avrà nel sito. Gli altri sticker sono sfumati. Le zone rosse sono le tende e quelle chiare le icone: stanno davanti agli sticker. Gli schermi dei visitatori variano, quindi la posizione in verticale può cambiare un po'. X e Y indicano l'angolo in alto a sinistra dello sticker.</p>
+
+            <label>A quale pagina porta?</label>
+            <select id="sticker-target">
+                <option value="fumetti">Fumetti</option>
+                <option value="illustrazioni">Illustrazioni</option>
+                <option value="shop">Personaggi</option>
+                <option value="chi-sono">Chi Sono</option>
+            </select>
+            <button class="btn-sticker" onclick="aggiungiSticker()">Aggiungi alla lista</button>
+        </div>
+
+        <!-- PANNELLO: nuova ILLUSTRAZIONE / nuovo PRODOTTO -->
+        <div class="pannello singola" id="pannello-singola">
+            <h3 id="titolo-singola">Nuova illustrazione</h3>
+            <label>Immagine:</label>
+            <div class="drop-zone" id="drop-singola">Trascina qui l'immagine</div>
+            <input type="text" id="singola-img" placeholder="es: Disegno uomini nudi.jpg">
+            <div class="solo-shop">
+                <label>Titolo (facoltativo):</label>
+                <input type="text" id="singola-titolo" placeholder="es: Maglia L'ultimo concerto">
             </div>
+            <label>Descrizione:</label>
+            <input type="text" id="singola-desc" placeholder="es: Rappresenta l'essenza più profonda del mio essere">
+            <div class="solo-shop">
+                <label>Prezzo (facoltativo):</label>
+                <input type="text" id="singola-prezzo" placeholder="es: 25 €">
+            </div>
+            <button onclick="aggiungiSingola()">Aggiungi alla lista</button>
         </div>
 
-        <label>A quale pagina porta?</label>
-        <select id="sticker-target">
-            <option value="fumetti">Fumetti</option>
-            <option value="illustrazioni">Illustrazioni</option>
-            <option value="shop">Shop</option>
-            <option value="chi-sono">Chi Sono</option>
-        </select>
-        <button class="btn-sticker" onclick="salvaSticker()">Genera file dati.js</button>
-    </div>
+        <!-- PANNELLO: nuovo FUMETTO -->
+        <div class="pannello fumetto" id="pannello-fumetti">
+            <h3>Nuovo fumettino</h3>
+            <label>Titolo del Fumetto:</label>
+            <input type="text" id="fumetto-titolo" placeholder="es: SINAPSI">
+            <label>Immagine di Copertina (appare nella griglia):</label>
+            <div class="drop-zone" id="drop-fumetto-cover">Trascina qui la copertina</div>
+            <input type="text" id="fumetto-cover" placeholder="es: cover-sinapsi.jpg">
+            <label>Testo Introduttivo:</label>
+            <textarea id="fumetto-desc" rows="3" placeholder="Scrivi di cosa parla..."></textarea>
+            <label>Pagine del Fumetto (trascinale anche tutte insieme):</label>
+            <div class="drop-zone" id="drop-fumetto-pagine">Trascina qui TUTTEH le pagine per avere l'anteprima</div>
+            <input type="text" id="fumetto-pagine" placeholder="es: pag1.jpg, pag1200.jpg">
 
-    <!-- MODULO 2: ILLUSTRAZIONI E SHOP -->
-    <div class="admin-box">
-        <h2>2. Immagine Singola (Illustrazioni o Shop)</h2>
-        <label>Sezione:</label>
-        <select id="singola-sezione">
-            <option value="illustrazioni">Illustrazioni</option>
-            <option value="shop">Shop</option>
-        </select>
-        <label>Immagine singola:</label>
-        <div class="drop-zone" id="drop-singola">Trascina qui l'immagine</div>
-        <input type="text" id="singola-img" placeholder="es: Disegno uomini nudi.jpg">
-        <label>Descrizione:</label>
-        <input type="text" id="singola-desc" placeholder="es: Rappresenta l'essenza più profonda del mio essere">
-        <button onclick="salvaSingola()">Genera file dati.js</button>
-    </div>
-
-    <!-- MODULO 3: FUMETTI STILE BEHANCE -->
-    <div class="admin-box fumetto">
-        <h2>Area x i fumettini</h2>
-        <label>Titolo del Fumetto:</label>
-        <input type="text" id="fumetto-titolo" placeholder="es: SINAPSI">
-        <label>Immagine di Copertina (appare nella griglia):</label>
-        <div class="drop-zone" id="drop-fumetto-cover">Trascina qui la copertina</div>
-        <input type="text" id="fumetto-cover" placeholder="es: cover-sinapsi.jpg">
-        <label>Testo Introduttivo:</label>
-        <textarea id="fumetto-desc" rows="3" placeholder="Scrivi di cosa parla..."></textarea>
-        <label>Pagine del Fumetto (trascinale anche tutte insieme):</label>
-        <div class="drop-zone" id="drop-fumetto-pagine">Trascina qui TUTTEH le pagine per avere l'anteprima</div>
-        <input type="text" id="fumetto-pagine" placeholder="es: pag1.jpg, pag1200.jpg">
-        
-        <label>Anteprima Scorrimento:</label>
-        <div id="fumetto-preview-area" style="width: 100%; height: 300px; overflow-y: auto; background: #111; border: 2px solid #555; border-radius: 5px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
-            <span style="color: #666; font-size: 13px; text-align: center;" id="fumetto-placeholder-testo">
-                L'anteprima apparirà qui... come per magia!
-            </span>
+            <label>Anteprima Libro (come lo vedrai aperto):</label>
+            <div id="fumetto-preview-area">
+                <span id="fumetto-placeholder-testo">
+                    L'anteprima apparirà qui... come per magia!
+                </span>
+            </div>
+            <button class="btn-fumetto" onclick="aggiungiFumetto()">Aggiungi alla lista</button>
         </div>
-        <button class="btn-fumetto" onclick="salvaFumetto()">Genera file dati.js</button>
+
+        <button class="btn-gestione" onclick="esportaDati()">Genera file dati.js</button>
     </div>
 
     <hr style="height: 8px; border: 0; background: linear-gradient(90deg, magenta, blue, cyan, lime, yellow, orange, red);">

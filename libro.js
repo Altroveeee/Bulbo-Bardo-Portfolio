@@ -7,7 +7,7 @@ function openComic(selectedBox, grid, itemData) {
     if (busy) return; busy = true; const wood = viewport.querySelector('.shelf-wood'); const index = [...grid.children].indexOf(selectedBox);
     const img = selectedBox.querySelector('img'); const ar = (img.naturalWidth && img.naturalHeight) ? img.naturalWidth / img.naturalHeight : selectedBox.offsetWidth / selectedBox.offsetHeight;
     const s = shownRect(img, ar); const book = prepareBook(itemData, ar); const t = book.target; const fly = makeFly(img.src, t); img.style.visibility = 'hidden';
-    const flyAnim = fly.animate([{ transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w})`, filter: SHELF_SHADOW }, { transform: 'none', filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' }], { duration: 700, delay: 150, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' });
+    const flyAnim = fly.animate([{ transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w})`}, { transform: 'none'}], { duration: 700, delay: 150, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' });
     const shelf = slideShelf(wood, grid, 'out', 100);
     Promise.all([flyAnim.finished, shelf.finished]).then(async () => { openState = { categoria: 'fumetti', itemData, index, ar, target: t }; await revealBook(book); fly.remove(); busy = false; });
 }
@@ -18,7 +18,7 @@ function closeComic() {
     const wood = document.createElement('div'); wood.className = 'shelf-wood'; const grid = buildGrid(siteData.fumetti, 'fumetti'); viewport.append(wood, grid);
     const img = grid.children[index].querySelector('img'); const s = shownRect(img, ar); img.style.visibility = 'hidden';
     const shelf = slideShelf(wood, grid, 'in');
-    const flyAnim = fly.animate([{ transform: 'none', filter: 'drop-shadow(0 0 0 rgba(0,0,0,0))' }, { transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w})`, filter: SHELF_SHADOW }], { duration: SHELF_IN_MS, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
+    const flyAnim = fly.animate([{ transform: 'none', }, { transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w})`}], { duration: SHELF_IN_MS, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
     Promise.all([flyAnim.finished, shelf.finished]).then(() => { img.style.visibility = ''; fly.remove(); busy = false; });
 }
 

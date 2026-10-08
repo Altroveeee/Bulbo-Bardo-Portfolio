@@ -1,0 +1,78 @@
+/* SHOP: griglia in basso, scheda del prodotto sopra (immagine a destra, testo a sinistra) */
+.shop-select {
+    --w: min(1100px, 74vw);                 /* larghezza dell'area, tra le tende */
+    position: fixed; inset: 0;
+    z-index: var(--content-z-index);
+    box-sizing: border-box;
+    padding: 11vh 0 22vh;                   /* sotto la tenda e sopra le icone */
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center;                /* chiuso: la griglia sta al centro */
+}
+
+/* ---------- Scheda del prodotto ---------- */
+.shop-stage {
+    flex: 0 0 0; width: var(--w); min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;         /* testo | immagine */
+    grid-template-rows: minmax(0, 1fr);
+    gap: 4vw; align-items: center;
+    visibility: hidden;
+}
+.shop-select.open .shop-stage { flex: 1 1 auto; visibility: visible; margin-bottom: 3vh; }
+
+.shop-info { justify-self: start; max-width: 34ch; text-align: left; }
+.shop-title {
+    margin: 0 0 1.6vh; color: #fff; text-transform: uppercase; line-height: 1.1;
+    font-size: clamp(1.4rem, 3vw, 2.4rem);
+}
+.shop-desc { margin: 0; color: #ccc; line-height: 1.5; white-space: pre-line; font-size: clamp(0.95rem, 1.3vw, 1.15rem); }
+.shop-price { margin: 2vh 0 0; color: #f3d98a; font-size: 1.3rem; }
+
+.shop-big { height: 100%; min-height: 0; display: flex; justify-content: flex-end; align-items: center; }
+.shop-big-img {
+    max-width: 100%; max-height: 100%; width: auto; height: auto;
+    object-fit: contain; display: block;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.8));
+}
+
+/* Senza testo l'immagine sta al centro */
+.shop-stage.no-text { grid-template-columns: 1fr; }
+.shop-stage.no-text .shop-info { display: none; }
+.shop-stage.no-text .shop-big { justify-content: center; }
+
+/* ---------- Griglia (centrata, anche l'ultima riga) ---------- */
+.shop-thumbs {
+    --thumb: clamp(84px, 14vh, 140px);
+    flex: none; width: var(--w); max-height: 32vh; box-sizing: border-box;
+    padding: 14px 8px;
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+    overflow-y: auto; scrollbar-width: none;
+}
+.shop-thumbs::-webkit-scrollbar { display: none; }
+
+.shop-thumb {
+    flex: none; width: var(--thumb); height: var(--thumb);
+    padding: 0; border: none; background: none; cursor: pointer;
+    border-radius: 6px;
+    outline: 2px solid transparent; outline-offset: 5px;
+    transition: transform 0.2s cubic-bezier(0.3, 2, 0.4, 1), filter 0.25s, outline-color 0.25s;
+}
+.shop-thumb img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+    pointer-events: none; -webkit-user-drag: none;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
+}
+.shop-thumb:hover,
+.shop-thumb.selected { transform: translateY(-4px) scale(1.06); }
+.shop-thumb.selected { outline-color: rgba(255, 255, 255, 0.9); }
+.shop-select.open .shop-thumb:not(.selected) { filter: brightness(0.6); }
+.shop-select.open .shop-thumb:not(.selected):hover { filter: brightness(0.9); }
+
+/* ---------- Telefono: immagine sopra, testo sotto ---------- */
+@media (max-width: 660px) {
+    .shop-select { --w: 68vw; padding: 9vh 0 21vh; }
+    .shop-stage { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 2vh; }
+    .shop-big { order: -1; justify-content: center; }
+    .shop-info { justify-self: center; text-align: center; max-height: 26vh; overflow-y: auto; }
+    .shop-thumbs { --thumb: clamp(64px, 11vh, 90px); gap: 10px; }
+}

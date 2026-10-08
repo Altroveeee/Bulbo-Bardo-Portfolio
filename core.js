@@ -7,6 +7,10 @@ const BOOK_H = 0.5; const BOOK_SINGLE_BP = 0; const BOOK_MOBILE_BP = 660;
 const SHELF_IN_MS = 900; const SHELF_OUT_MS = 700;
 const SHELF_SHADOW = 'drop-shadow(0 5px 6px rgba(0,0,0,0.65))';
 
+// Sticker della home: misura dello schermo su cui li hai disposti (0 = usa lo schermo attuale)
+const STICKER_REF_W = 0, STICKER_REF_H = 0;                // computer
+const STICKER_REF_W_MOBILE = 0, STICKER_REF_H_MOBILE = 0;  // telefono
+
 let openState = null;
 let busy = false;
 let currentPage = null;
@@ -17,10 +21,7 @@ const nextFrames = (n = 2) => new Promise(res => {
 });
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-// AVVIO E SIPARIO
-window.addEventListener('load', () => {
-    setTimeout(() => { const sipario = document.getElementById('intro-curtains'); if (sipario) sipario.classList.add('open'); }, 500);
-});
+// AVVIO: il sipario iniziale (chiuso finché la pagina non è pronta) lo gestisce caricamento.js
 
 // MOTORE DI NAVIGAZIONE
 async function navigateTo(page) {
@@ -38,6 +39,8 @@ async function leaveCurrent(target) {
     const gal  = viewport.querySelector('.h-gallery');
     if (wood && grid && window.slideShelf) await slideShelf(wood, grid, 'out').finished;
     else if (gal && window.slideEls) await slideEls([gal], 'out').finished;
+    else if (viewport.querySelector('.shop-select') && window.leaveShop) await leaveShop();
+    else if (viewport.querySelector('.chi-sono') && window.leaveChiSono) await leaveChiSono();
     else if (target !== 'home') await dropStickers();
 }
 
@@ -51,9 +54,10 @@ function slideEls(els, dir, delay = 0, dist = window.innerHeight + 60) {
 
 function showPage(page) {
     currentPage = page;
-    if (page === 'fumetti' || page === 'shop') renderGrid(siteData[page], page);
+    if (page === 'fumetti') renderGrid(siteData[page], page);
+    else if (page === 'shop') renderShop(siteData.shop);
     else if (page === 'illustrazioni') renderGallery(siteData.illustrazioni);
-    else if (page === 'chi-sono') viewport.innerHTML = '<h1 style="color:white; text-align:center; padding-top:20vh;">Chi Sono</h1>';
+    else if (page === 'chi-sono') renderChiSono(siteData.chiSono);
     else renderHome();
 }
 
@@ -71,14 +75,44 @@ function dropStickers() {
 
 function renderHome() {
     currentPage = 'home'; openState = null; viewport.innerHTML = '';
+    
+    // Se il file dati.js è vuoto o corrotto, fermiamo il disastro
+    if (!siteData || !siteData.stickers) {
+        console.error("Errore: siteData.stickers non trovato. Controlla dati.js!");
+        return;
+    }
+
+    // Posizioni ancorate al CENTRO dello schermo e fissate in pixel:
+    // ridimensionando la finestra gli sticker restano fermi e centrati
+    const refD = { w: STICKER_REF_W || window.innerWidth, h: STICKER_REF_H || window.innerHeight };
+    const refM = { w: STICKER_REF_W_MOBILE || window.innerWidth, h: STICKER_REF_H_MOBILE || window.innerHeight };
+    const off = (v, size) => `calc(50% + ${Math.round((v / 100 - 0.5) * size)}px)`;
+
     siteData.stickers.forEach(data => {
         const sticker = document.createElement('img');
-        sticker.src = 'immagini/' + data.src; sticker.className = 'draggable-sticker';
-        sticker.dataset.target = data.targetPage; sticker.draggable = false;
-        sticker.style.setProperty('--x-desktop', `${data.startX}vw`); sticker.style.setProperty('--y-desktop', `${data.startY}vh`); sticker.style.setProperty('--rot-desktop', `${data.rotDesktop || 0}deg`);
-        const mX = data.startX_mobile !== undefined ? data.startX_mobile : data.startX; const mY = data.startY_mobile !== undefined ? data.startY_mobile : data.startY; const mRot = data.rotMobile !== undefined ? data.rotMobile : (data.rotDesktop || 0);
-        sticker.style.setProperty('--x-mobile', `${mX}vw`); sticker.style.setProperty('--y-mobile', `${mY}vh`); sticker.style.setProperty('--rot-mobile', `${mRot}deg`);
-        viewport.appendChild(sticker); makeDraggable(sticker);
+        sticker.src = 'immagini/' + data.src; 
+        sticker.className = 'draggable-sticker';
+        sticker.dataset.target = data.targetPage; 
+        sticker.draggable = false;
+        
+        // Iniezione sicura con fallback per i vecchi dati
+        sticker.style.setProperty('--x-desktop', off(data.startX, refD.w)); 
+        sticker.style.setProperty('--y-desktop', off(data.startY, refD.h)); 
+        sticker.style.setProperty('--rot-desktop', `${data.rotDesktop || 0}deg`);
+        sticker.style.setProperty('--w-desktop', `${data.wDesktop || 150}px`); // <-- DA vw A px
+        
+        const mX = data.startX_mobile !== undefined ? data.startX_mobile : data.startX; 
+        const mY = data.startY_mobile !== undefined ? data.startY_mobile : data.startY; 
+        const mRot = data.rotMobile !== undefined ? data.rotMobile : (data.rotDesktop || 0);
+        const mW = data.wMobile !== undefined ? data.wMobile : (data.wDesktop || 150);
+        
+        sticker.style.setProperty('--x-mobile', off(mX, refM.w)); 
+        sticker.style.setProperty('--y-mobile', off(mY, refM.h)); 
+        sticker.style.setProperty('--rot-mobile', `${mRot}deg`);
+        sticker.style.setProperty('--w-mobile', `${mW}px`);
+        
+        viewport.appendChild(sticker); 
+        makeDraggable(sticker);
     });
 }
 
@@ -90,10 +124,15 @@ function makeDraggable(element) {
     element.addEventListener('pointerup', end); element.addEventListener('pointercancel', end);
 }
 
+// Se si passa dal layout telefono a quello computer (o viceversa), ricalcola le posizioni
+matchMedia('(max-width: 768px)').addEventListener('change', () => { if (currentPage === 'home') renderHome(); });
+
+// --- BOTTONI IN BASSO ---
 document.getElementById('nav-fumetti').addEventListener('click', () => navigateTo('fumetti'));
 document.getElementById('nav-illustrazioni').addEventListener('click', () => navigateTo('illustrazioni'));
 document.getElementById('nav-shop').addEventListener('click', () => navigateTo('shop'));
 document.getElementById('nav-about').addEventListener('click', () => navigateTo('chi-sono'));
 document.getElementById('nav-home').addEventListener('click', () => navigateTo('home'));
 
+// --- MOTORE DI AVVIO ---
 renderHome();
