@@ -3,50 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <!-- I 3 file CSS separati -->
+    <link rel="stylesheet" href="stile-base.css">
+    <link rel="stylesheet" href="stile-gallerie.css">
+    <link rel="stylesheet" href="stile-libro.css">
     <title>Sito Regalo</title>
 </head>
 <body>
-
     <!-- SIPARIO INIZIALE DI CARICAMENTO -->
     <div id="intro-curtains">
         <div class="intro-half intro-left"></div>
         <div class="intro-half intro-right"></div>
     </div>
 
-<!-- Cornice teatrale fissa in primo piano -->
+    <!-- Cornice teatrale fissa in primo piano -->
     <div id="theatrical-frame">
-        
-        <!-- I 3 elementi della tenda -->
         <div class="curtain top"></div>
         <div class="curtain left"></div>
         <div class="curtain right"></div>
         
-        <!-- Le Icone di Navigazione Inferiori -->
         <nav id="bottom-navigation">
-            <button id="nav-home" class="nav-icon" title="Home">
-                <img src="immagini/interfaccia/icona-home.png" alt="Home">
-            </button>
-            <button id="nav-fumetti" class="nav-icon" title="Fumetti">
-                <img src="immagini/interfaccia/icona-fumetti.png" alt="Fumetti">
-            </button>
-            <button id="nav-illustrazioni" class="nav-icon" title="Illustrazioni">
-                <img src="immagini/interfaccia/icona-illustrazioni.png" alt="Illustrazioni">
-            </button>
-            <button id="nav-shop" class="nav-icon" title="Shop">
-                <img src="immagini/interfaccia/icona-shop.png" alt="Shop">
-            </button>
-            <button id="nav-about" class="nav-icon" title="Chi Sono">
-                <img src="immagini/interfaccia/icona-chisono.png" alt="Chi Sono">
-            </button>
+            <button id="nav-home" class="nav-icon" title="Home"><img src="immagini/interfaccia/icona-home.png" alt="Home"></button>
+            <button id="nav-fumetti" class="nav-icon" title="Fumetti"><img src="immagini/interfaccia/icona-fumetti.png" alt="Fumetti"></button>
+            <button id="nav-illustrazioni" class="nav-icon" title="Illustrazioni"><img src="immagini/interfaccia/icona-illustrazioni.png" alt="Illustrazioni"></button>
+            <button id="nav-shop" class="nav-icon" title="Shop"><img src="immagini/interfaccia/icona-shop.png" alt="Shop"></button>
+            <button id="nav-about" class="nav-icon" title="Chi Sono"><img src="immagini/interfaccia/icona-chisono.png" alt="Chi Sono"></button>
         </nav>
-
     </div>
 
-    <!-- Contenitore dove JavaScript inietterà gli stickers o le griglie -->
     <main id="dynamic-viewport"></main>
     
+    <!-- I file JS: L'ordine è ASSOLUTAMENTE CRITICO -->
     <script src="dati.js"></script>
-    <script src="app.js"></script>
+    <script src="core.js"></script>
+    <script src="gallerie.js"></script>
+    <script src="libro.js"></script>
 </body>
 </html>
