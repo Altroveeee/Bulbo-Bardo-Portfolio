@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>~*~ Admin - Gestione Sito ~*~ BENVENUTI!!!</title>
+    <style>
+        @keyframes blink { 0%,49% { visibility: visible; } 50%,100% { visibility: hidden; } }
+        @keyframes rainbow { 0%{color:red} 17%{color:orange} 33%{color:yellow} 50%{color:lime} 67%{color:cyan} 83%{color:magenta} 100%{color:red} }
+        @keyframes shake { 0%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} 100%{transform:rotate(-3deg)} }
+        @keyframes bgmove { from { background-position: 0 0; } to { background-position: 60px 60px; } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        body {
+            font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", cursive;
+            background-color: #00eaff;
+            background-image: repeating-conic-gradient(#0800ff 0% 25%, #77a9ff 0% 50%);
+            background-size: 60px 60px;
+            animation: bgmove 3s linear infinite;
+            color: #00ff00;
+            padding: 10px;
+            cursor: crosshair;
+        }
+        .blink { animation: blink 0.8s steps(1) infinite; }
+        .rainbow { animation: rainbow 1.2s linear infinite; }
+        .shake { display: inline-block; animation: shake 0.3s infinite; }
+        h1, h2 { text-shadow: 3px 3px 0 #000, -1px -1px 0 #fff; }
+        h1 { font-size: 42px; text-align: center; margin: 10px 0; font-family: Impact, "Comic Sans MS", fantasy; letter-spacing: 3px; }
+
+        .banner { background: #000; color: yellow; border: 4px ridge rgb(255, 140, 0); padding: 4px; max-width: 640px; margin: 0 auto 10px; font-size: 20px; font-weight: bold; }
+
+        /* Guida */
+        .guide-box { background: #bfff00; color: #110080; padding: 15px; max-width: 600px; margin: 0 auto 30px; border: 8px ridge #ff0000; box-shadow: 10px 10px 0 #000; }
+        .guide-box h2 { margin-top: 0; color: #ff0000; text-decoration: underline wavy rgb(255, 0, 0); text-align: center; }
+        .guide-step { margin-bottom: 12px; font-size: 15px; line-height: 1.4; background: #fff; border: 2px dotted #00f; padding: 6px; }
+        .guide-step strong { color: #00f7ff; background: #ff0000; padding: 0 4px; }
+
+        .admin-box { background: #000080; color: #00ff00; padding: 20px; max-width: 600px; margin: 0 auto 30px; border: 10px groove #00ff00; box-shadow: 10px 10px 0 #000; }
+        .admin-box.fumetto { background: #800000; color: #ffff00; border: 10px groove #ff9800; }
+        .admin-box.sticker { background: #004040; color: #ff69b4; border: 10px groove #ff69b4; }
+        .admin-box h2 { text-align: center; background: #000; border: 3px dashed currentColor; padding: 6px; }
+        label { font-weight: bold; text-decoration: underline; }
+
+        input, textarea, select {
+            width: 100%; padding: 8px; margin: 8px 0 20px 0; box-sizing: border-box;
+            background: #fff; color: #000; border: 3px inset #808080;
+            font-family: "Courier New", monospace; font-size: 14px;
+        }
+        select { background: #ffffcc; }
+        button {
+            background: #c0c0c0; color: #000080; border: 4px outset #fff; padding: 15px; width: 100%;
+            cursor: pointer; font-weight: bold; font-size: 18px; font-family: "Comic Sans MS", cursive;
+            text-transform: uppercase;
+        }
+        button:active { border-style: inset; }
+        button:hover { background: #ffff00; color: #f00; }
+        button.btn-fumetto { background: #ff9800; }
+        button.btn-sticker { background: #ff69b4; }
+        button::before { content: "★ "; } button::after { content: " ★"; }
+
+        .note { font-size: 12px; color: #aaa; margin-top: -15px; margin-bottom: 20px; display: block; }
+        .flex-row { display: flex; gap: 15px; }
+
+        .drop-zone { border: 4px dashed #ff0000; padding: 20px; text-align: center; color: #000; background: #ffff00; font-weight: bold; cursor: default; margin-bottom: 8px; transition: all 0.2s; }
+        .drop-zone.dragover { background: #00ffff; border-color: #0000ff; color: #f00; transform: scale(1.05) rotate(2deg); }
+
+        .footer { text-align: center; color: #000; background: #fff; border: 3px double #f0f; max-width: 600px; margin: 0 auto; padding: 10px; font-size: 13px; }
+        .footer img-fake { display: inline-block; }
+        .badge { display: inline-block; background: #c0c0c0; border: 2px outset #fff; padding: 2px 6px; margin: 3px; font-size: 11px; color: #000; font-family: Arial, sans-serif; }
+
+        /* Schermata di Caricamento */
+        #loader-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,0,255,0.9); z-index: 9999; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .spinner {
+            border: 8px dotted #ffff00; border-top: 8px solid #00ffff; border-radius: 50%;
+            width: 70px; height: 70px; animation: spin 0.6s linear infinite; margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SCHERMATA DI CARICAMENTO -->
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+        <h2 class="rainbow" style="margin: 0; font-size: 34px;">⌛ ELABORAZIONE IMMAGINI... ⌛</h2>
+        <p class="blink" style="color: #fff; margin-top: 5px; font-size: 20px;">Attendi qualche istante</p>
+    </div>
+
+    <div class="banner"><marquee scrollamount="10">*** BENVENUTO NEL PANNELLO ADMIN PIÙ FIGO DEL WEB *** TRASCINA LE IMMAGINI E NON TOCCARE NIENTE DI STRANO *** SITO AGGIORNATO CON AMORE ***</marquee></div>
+
+    <h1><span class="rainbow">~*~ ADMIN ~*~</span><br><span class="blink" style="color:#fff">GESTIONE SITO</span></h1>
+
+    <p style="text-align:center; font-size: 26px;">
+        <span class="shake">🚧</span> <span class="blink" style="color:#ff0">SITO IN COSTRUZIONE</span> <span class="shake">🚧</span>
+    </p>
+
+    <hr style="height: 8px; border: 0; background: linear-gradient(90deg, red, orange, yellow, lime, cyan, blue, magenta);">
+
+    <!-- MANUALE D'USO INTEGRATO -->
+    <div class="guide-box">
+        <h2>Guida Rapida per Aggiornare il Sito</h2>
+        <div class="guide-step"><strong>1. Sposta le immagini:</strong> Metti SEMPRE le nuove foto o i disegni dentro la cartella "immagini" del sito prima di iniziare.</div>
+        <div class="guide-step"><strong>2. Trascina:</strong> Prendi l'immagine dal tuo computer e trascinala nei riquadri tratteggiati qui sotto. Il sistema copierà il nome da solo.</div>
+        <div class="guide-step"><strong>3. Esporta:</strong> Clicca sul pulsante "Genera file dati.js" alla fine del blocco che hai usato.</div>
+        <div class="guide-step"><strong>4. Sostituisci:</strong> Il computer ti scaricherà un file. Prendilo, trascinalo nella cartella principale del sito e scegli "Sostituisci". Fatto!</div>
+    </div>
+
+    <!-- MODULO 1: STICKERS DELLA HOME -->
+    <div class="admin-box sticker">
+        <h2>✨ 1. Aggiungi uno Sticker ✨</h2>
+        <label>Immagine dello sticker:</label>
+        <div class="drop-zone" id="drop-sticker">Trascina qui l'immagine</div>
+        <input type="text" id="sticker-img" placeholder="es: maschera.png">
+
+        <label>Posiziona lo sticker (Trascinalo nelle due mappe!)</label>
+        <div class="flex-row" style="margin-bottom: 15px;">
+            <div style="flex: 2;">
+                <label style="font-size: 11px; color: #aaa;">💻 Schermo Computer</label>
+                <div id="sticker-preview-desktop" style="position: relative; width: 100%; height: 180px; background: #111; border: 2px solid #555; border-radius: 5px; overflow: hidden;">
+                    <img id="nuovo-sticker-desktop" style="display: none; position: absolute; width: 40px; cursor: grab; border: 2px dashed #2196F3; z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(0deg);">
+                </div>
+                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                    <input type="number" id="sticker-x" placeholder="X" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
+                    <input type="number" id="sticker-y" placeholder="Y" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
+                    <input type="number" id="sticker-rot" placeholder="Gradi°" value="0" style="margin: 0; padding: 5px; width: 70px;">
+                </div>
+            </div>
+            <div style="flex: 1;">
+                <label style="font-size: 11px; color: #aaa;">📱 Schermo Telefono</label>
+                <div id="sticker-preview-mobile" style="position: relative; width: 100%; height: 180px; background: #111; border: 2px solid #555; border-radius: 5px; overflow: hidden;">
+                    <img id="nuovo-sticker-mobile" style="display: none; position: absolute; width: 30px; cursor: grab; border: 2px dashed #e91e63; z-index: 100; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(0deg);">
+                </div>
+                <div style="display: flex; gap: 5px; margin-top: 5px;">
+                    <input type="number" id="sticker-x-mobile" placeholder="X" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
+                    <input type="number" id="sticker-y-mobile" placeholder="Y" min="0" max="100" value="50" style="margin: 0; padding: 5px;">
+                    <input type="number" id="sticker-rot-mobile" placeholder="Gradi°" value="0" style="margin: 0; padding: 5px; width: 70px;">
+                </div>
+            </div>
+        </div>
+
+        <label>A quale pagina porta?</label>
+        <select id="sticker-target">
+            <option value="fumetti">Fumetti</option>
+            <option value="illustrazioni">Illustrazioni</option>
+            <option value="shop">Shop</option>
+            <option value="chi-sono">Chi Sono</option>
+        </select>
+        <button class="btn-sticker" onclick="salvaSticker()">Genera file dati.js</button>
+    </div>
+
+    <!-- MODULO 2: ILLUSTRAZIONI E SHOP -->
+    <div class="admin-box">
+        <h2>2. Immagine Singola (Illustrazioni o Shop)</h2>
+        <label>Sezione:</label>
+        <select id="singola-sezione">
+            <option value="illustrazioni">Illustrazioni</option>
+            <option value="shop">Shop</option>
+        </select>
+        <label>Immagine singola:</label>
+        <div class="drop-zone" id="drop-singola">Trascina qui l'immagine</div>
+        <input type="text" id="singola-img" placeholder="es: Disegno uomini nudi.jpg">
+        <label>Descrizione:</label>
+        <input type="text" id="singola-desc" placeholder="es: Rappresenta l'essenza più profonda del mio essere">
+        <button onclick="salvaSingola()">Genera file dati.js</button>
+    </div>
+
+    <!-- MODULO 3: FUMETTI STILE BEHANCE -->
+    <div class="admin-box fumetto">
+        <h2>Area x i fumettini</h2>
+        <label>Titolo del Fumetto:</label>
+        <input type="text" id="fumetto-titolo" placeholder="es: SINAPSI">
+        <label>Immagine di Copertina (appare nella griglia):</label>
+        <div class="drop-zone" id="drop-fumetto-cover">Trascina qui la copertina</div>
+        <input type="text" id="fumetto-cover" placeholder="es: cover-sinapsi.jpg">
+        <label>Testo Introduttivo:</label>
+        <textarea id="fumetto-desc" rows="3" placeholder="Scrivi di cosa parla..."></textarea>
+        <label>Pagine del Fumetto (trascinale anche tutte insieme):</label>
+        <div class="drop-zone" id="drop-fumetto-pagine">Trascina qui TUTTEH le pagine per avere l'anteprima</div>
+        <input type="text" id="fumetto-pagine" placeholder="es: pag1.jpg, pag1200.jpg">
+        
+        <label>Anteprima Scorrimento:</label>
+        <div id="fumetto-preview-area" style="width: 100%; height: 300px; overflow-y: auto; background: #111; border: 2px solid #555; border-radius: 5px; padding: 10px; box-sizing: border-box; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <span style="color: #666; font-size: 13px; text-align: center;" id="fumetto-placeholder-testo">
+                L'anteprima apparirà qui... come per magia!
+            </span>
+        </div>
+        <button class="btn-fumetto" onclick="salvaFumetto()">Genera file dati.js</button>
+    </div>
+
+    <hr style="height: 8px; border: 0; background: linear-gradient(90deg, magenta, blue, cyan, lime, yellow, orange, red);">
+
+    <div class="footer">
+        <span class="badge">Fatto a mano</span>
+        <span class="badge">100% artigianale</span>
+        <span class="badge">Ora con più glitter</span>
+        <p><span class="blink" style="color:red">★</span> © 1999-2026 · Tutti i diritti riservati <span class="blink" style="color:red">★</span></p>
+    </div>
+
+    <script src="dati.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
