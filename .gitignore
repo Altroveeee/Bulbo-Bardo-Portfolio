@@ -1,0 +1,18 @@
+# Esclusione categorica degli asset grafici
+immagini/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.svg
+*.webp
+
+# Igiene digitale e file di sistema (Mac/Windows)
+.DS_Store
+Thumbs.db
+
+# File di configurazione locale e credenziali
+.env
+
+# Dipendenze (se mai dovessi usare Node.js)
+node_modules/

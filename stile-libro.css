@@ -5,36 +5,123 @@
 .fly { position: fixed; z-index: 30; margin: 0; max-width: none; object-fit: fill; pointer-events: none; transform-origin: center center; will-change: transform, filter; }
 
 /* LIBRO FUMETTO */
-.book-view { padding: 80px 0 18vh; background: transparent; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.book-scene { display: flex; flex-direction: column; align-items: center; gap: 2vh; width: 100%; }
-.book-title { margin: 0; color: white; font-size: clamp(1.1rem, 2.4vw, 1.8rem); text-transform: uppercase; text-align: center; }
-.book { --pw: 300px; --ph: 420px; position: relative; width: calc(var(--pw) * 2); height: var(--ph); perspective: 2400px; transition: transform 0.7s cubic-bezier(0.5, 0, 0.2, 1); cursor: pointer; user-select: none; touch-action: pan-y; }
+.book-view { padding: 0; background: transparent; display: flex; align-items: center; justify-content: center; overflow: hidden; height: 100dvh; width: 100vw; }
+/* Il contenitore diventa la griglia di riferimento assoluto per i testi */
+.book-scene { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+/* Titolo confinato a sinistra */
+.book-title { 
+    position: absolute; 
+    left: 18vw;      /* Sufficientemente distante dalla tenda */
+    top: 25vh;      /* Elevato per sovrastare la colonna di testo */
+    width: 25vw; 
+    max-width: 350px; 
+    margin: 0; 
+    color: white; 
+    font-size: clamp(1.2rem, 2.2vw, 2rem); 
+    text-transform: uppercase; 
+    text-align: left; 
+    z-index: 10; 
+}
+
+.book { --pw: 300px; --ph: 420px; position: relative; width: calc(var(--pw) * 2); height: var(--ph); perspective: 2400px; transition: transform 0.7s cubic-bezier(0.5, 0, 0.2, 1); cursor: pointer; user-select: none; touch-action: pan-y; z-index: 5; }
 .book.single { width: var(--pw); }
 .book.at-start { transform: translateX(calc(var(--pw) * -0.5)); }
 .book.at-end { transform: translateX(calc(var(--pw) * 0.5)); }
 .leaf { position: absolute; top: 0; left: 50%; width: 50%; height: 100%; transform-origin: left center; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.45, 0, 0.2, 1); }
 .book.single .leaf { left: 0; width: 100%; }
 .leaf.flipped { transform: rotateY(-180deg); }
-.face { position: absolute; inset: 0; overflow: hidden; background: #ffffff; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 0.25px solid rgba(0, 0, 0, 0.3); }
+
+/* Sfondo nero imposto alla pagina per mimetizzare i margini del contenimento */
+.face { position: absolute; inset: 0; overflow: hidden; background: #000000; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 0.25px solid rgba(255, 255, 255, 0.15); }
 .face.back { transform: rotateY(180deg); }
-.face img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+.face img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
+
 .face::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to right, rgba(0,0,0,0.1), transparent 8%); }
 .face.back::after { background: linear-gradient(to left, rgba(0, 0, 0, 0.1), transparent 8%); }
 .leaf.peek-next { transform: rotateY(-14deg); }
 .leaf.flipped.peek-prev { transform: rotateY(-166deg); }
 .leaf.peek-next, .leaf.peek-prev { transition-duration: 0.35s; }
-/* Chiusura del libro: pagine più veloci, sul livello grafico dedicato e senza le ombre sovrapposte (più fluido) */
 .book.closing .leaf { transition-duration: 0.6s; will-change: transform; }
 .book.closing .face::after { display: none; }
-.book-counter { color: white; min-width: 3ch; text-align: center; }
-.book-desc { margin: 0; max-width: min(600px, 50vw); color: #ccc; font-size: 0.95rem; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.book-counter { position: absolute; bottom: 5vh; left: 50%; transform: translateX(-50%); color: white; min-width: 3ch; text-align: center; z-index: 10; font-family: monospace; font-size: 1.1rem; }
+
+/* Descrizione confinata a destra, con scorrimento indipendente attivato */
+/* DESCRIZIONE: L'eleganza bruta delle colonne CSS */
+.book-desc { 
+    position: absolute; 
+    left: 18vw;      /* Margine speculare a sinistra */
+    right: 17vw;     /* Margine speculare a destra */
+    top: 30vh;      /* Inizia ordinatamente sotto il titolo */
+    
+    margin: 0; 
+    color: #ccc; 
+    font-size: 0.95rem; 
+    text-align: left; /* Giustificazione editoriale per un aspetto presentabile */
+    
+    /* Il trucco magico: due colonne con un abisso centrale */
+    column-count: 2; 
+    /* La larghezza del divario è calcolata per alloggiare il libro dinamico senza sovrapposizioni */
+    column-gap: clamp(306px, 20vw, 660px); 
+    column-fill: balance; /* Il browser bilancerà automaticamente il peso del testo tra i due lati */
+    
+    z-index: 1; 
+}
+
 .pending { opacity: 0 !important; pointer-events: none !important; }
 .book-title, .book-counter, .book-desc { transition: opacity 0.4s ease; }
 .texts-hidden { opacity: 0; }
 body:has(.book-view) { background: #000; }
 
-@media (max-width: 660px) {
-    .gallery-grid.cat-fumetti { --row: clamp(120px, 22vh, 190px); grid-template-columns: repeat(2, 1fr); width: 66vw; column-gap: 14px; }
-    .book-view { padding: 65px 0 16vh; }
-    .book-desc { max-width: 56vw; font-size: 0.85rem; }
+/* LAYOUT MOBILE: Demolizione delle colonne e ritorno all'ordine verticale */
+@media (max-width: 768px) {
+    .gallery-grid.cat-fumetti { 
+        --row: clamp(120px, 22vh, 190px); 
+        grid-template-columns: repeat(2, 1fr); 
+        width: 66vw; 
+        column-gap: 14px; 
+    }
+    
+    /* Trasformiamo il contenitore in una colonna rigorosa */
+    .book-scene {
+        flex-direction: column;
+        justify-content: center;
+        gap: 3vh; /* Questo parametro è l'unico arbitro dello spazio tra gli elementi */
+    }
+    
+    /* Neutralizziamo l'anarchia dei posizionamenti assoluti */
+    .book-title, .book-counter, .book-desc {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        transform: none;
+    }
+    
+    /* Titolo riadattato al flusso naturale */
+    .book-title { 
+        width: 90vw; 
+        max-width: none; 
+        text-align: center; 
+        font-size: 1.2rem; 
+    }
+    
+    .book-counter { 
+        font-size: 0.9rem; 
+        margin-top: -1vh; /* Un tocco di finezza per avvicinarlo al volume */
+    }
+    
+    /* Descrizione priva di colonne e costrizioni assolute */
+    .book-desc { 
+        width: 58vw; 
+        max-width: none; 
+        max-height: 25vh; 
+        text-align: center; 
+        padding-right: 0; 
+        font-size: 0.85rem;
+        column-count: 1; 
+        column-gap: 0;
+    }
 }

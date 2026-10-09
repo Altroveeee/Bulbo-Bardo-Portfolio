@@ -3,7 +3,7 @@
 .gallery-item { position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .gallery-grid.falling-cards-active .gallery-item { pointer-events: none; }
 .gallery-grid.falling-cards-active .gallery-item.selected { z-index: 50; transform-origin: center center; }
-.gallery-item img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
+.gallery-item img { height: 100%; object-fit: contain; display: block; pointer-events: none; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.6)); }
 
 /* VISTA FULLSCREEN E CHIUSURA */
 .fullscreen-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto; padding: 15vh 10vw; box-sizing: border-box; z-index: 20; animation: viewFadeIn 0.4s ease both; }

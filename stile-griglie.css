@@ -14,5 +14,5 @@
 
 /* Telefono: due fumetti per ripiano */
 @media (max-width: 660px) {
-    .gallery-grid.cat-fumetti { --item-w: calc((100% - 14px) / 2); }
+    .gallery-grid.cat-fumetti { --item-w: calc((100% - 12px) / 2); }
 }

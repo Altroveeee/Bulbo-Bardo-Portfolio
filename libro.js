@@ -31,15 +31,36 @@ async function closeComic() {
     const arrow = viewport.querySelector('.back-arrow'); if (arrow) { arrow.style.transition = 'opacity 0.3s'; arrow.style.opacity = '0'; arrow.style.pointerEvents = 'none'; }
     // lo scaffale si prepara (e le copertine si decodificano) mentre le pagine si chiudono, così dopo non ci sono scatti
     const grid = buildGrid(siteData.fumetti, 'fumetti');
+
+    // Inibizione brutale delle animazioni di ingresso
+    grid.style.animation = 'none';
+    Array.from(grid.children).forEach(box => {
+        box.style.animation = 'none';
+        const img = box.querySelector('img');
+        if (img) img.style.animation = 'none';
+        box.style.transition = 'none'; // Opzionale, previene sbalzi di transizione
+    });
     const pronto = Promise.all([...grid.querySelectorAll('img')].map(i => i.decode().catch(() => {})));
     if (bookEl && bookEl._closeAll) await bookEl._closeAll();
     await pronto;
     // 2. il fumetto chiuso torna sullo scaffale
     updateUrl('fumetti', null);
     openState = null;
-    const fly = makeFly('immagini/' + itemData.copertina, t); viewport.querySelectorAll('.book-view, .back-arrow').forEach(n => n.remove());
-    const wood = document.createElement('div'); wood.className = 'shelf-wood'; viewport.append(wood, grid);
-    const img = grid.children[index].querySelector('img'); const s = shownRect(img, ar); img.style.visibility = 'hidden';
+    
+    // PRIMA appendiamo la griglia al DOM...
+    const wood = document.createElement('div'); 
+    wood.className = 'shelf-wood'; 
+    viewport.append(wood, grid);
+    
+    // ...così possiamo recuperare la sua immagine esatta (già scaricata e in cache)
+    const img = grid.children[index].querySelector('img'); 
+    const s = shownRect(img, ar); 
+    img.style.visibility = 'hidden';
+    
+    // ORA creiamo l'animazione di volo usando "img.src" invece del percorso testuale!
+    const fly = makeFly(img.src, t); 
+    viewport.querySelectorAll('.book-view, .back-arrow').forEach(n => n.remove());
+    
     const shelf = slideShelf(wood, grid, 'in');
     const flyAnim = fly.animate([{ transform: 'none', }, { transform: `translate(${s.cx - t.cx}px, ${s.cy - t.cy}px) scale(${s.w / t.w})`}], { duration: SHELF_IN_MS, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' });
     Promise.all([flyAnim.finished, shelf.finished]).then(() => { img.style.visibility = ''; fly.remove(); busy = false; });
@@ -93,22 +114,35 @@ function createBook(root, faces, ar) {
     book._warm = warm;
     book._closeAll = () => warm().then(() => nextFrames(2)).then(() => new Promise(res => {
         closing = true; peek(0);
-        const n = cur;
-        if (n <= 0) return nextFrames(2).then(res);
-        const VISIBILI = Math.min(3, n), STEP = 110, DUR = 450;
-        for (let i = 0; i < n - VISIBILI; i++) {   // le pagine più in basso vanno subito sulla pila di destra, sotto a tutte
-            const l = leaves[i]; l.style.transition = 'none'; l.classList.remove('flipped'); l.style.zIndex = 0;
+        if (cur <= 0) return nextFrames(2).then(res);
+        
+        const DUR = 450;
+        
+        // 1. Chiudiamo subito le pagine interne e lasciamo solo la copertina a sinistra
+        for (let i = 1; i < cur; i++) {
+            const l = leaves[i]; 
+            l.style.transition = 'none'; 
+            l.classList.remove('flipped'); 
+            l.style.zIndex = leaves.length - i; 
         }
-        for (let k = 0; k < VISIBILI; k++) {
-            setTimeout(() => { const l = leaves[cur - 1]; l.style.transitionDuration = DUR + 'ms'; go(-1, true); }, k * STEP);
-        }
-        setTimeout(() => {   // finito: il libro è chiuso e centrato sulla copertina, senza altre animazioni
+        
+        // Il libro si ritrova ora alla "prima pagina" (solo la copertina è aperta)
+        cur = 1; update();
+        
+        // 2. Animiamo la copertina che si chiude
+        setTimeout(() => { 
+            leaves[0].style.transitionDuration = DUR + 'ms'; 
+            go(-1, true); 
+        }, 50);
+        
+        // 3. Ripristino finale
+        setTimeout(() => {
             book.style.transition = 'none';
             leaves.forEach((l, i) => { l.style.transition = 'none'; l.classList.remove('flipped'); l.style.zIndex = leaves.length - i; });
             cur = 0; update();
             void book.offsetWidth;
             nextFrames(2).then(res);
-        }, (VISIBILI - 1) * STEP + DUR + 60);
+        }, DUR + 100);
     }));
     build();
     warm();   // appena aperto, le foto di tutte le pagine si preparano subito

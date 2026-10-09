@@ -228,6 +228,27 @@ const siteData = {
                 "sololaveraarte_14.jpg",
                 "sololaveraarte_15.jpg"
             ]
+        },
+        {
+            "id": 1791565946778,
+            "titolo": "sinapsi",
+            "copertina": "Copertina sinapsi davanti.png",
+            "descrizione": "Nel mondo interiore del pittore Bulbo,\nTequilibrio è spezzato: il Ponte Calloso è\ncrollato, condannando ogni artista che abita\nil cervello ad una sterile apatia artistica.\nBulbo, rintanato in un isolamento rassegnato,\nè l'unico che anche da prima del morbo era\nvittima di una già esaurita vena artistica,\nfinché non viene trovato da Cuoio, un\nmisterioso ragazzino che si definisce\nscrittore in crisi.",
+            "pagine": [
+                "sinap1.png",
+                "sinap2.png",
+                "sinap3.png",
+                "sinap4.png",
+                "sinap5.png",
+                "sinap6.png",
+                "sinap7.png",
+                "sinap8.png",
+                "sinap9.png",
+                "sinap10.png",
+                "sinap11.png",
+                "sinap12.png",
+                "copertina sinapsi dietro.png"
+            ]
         }
     ],
     "chiSono": {
