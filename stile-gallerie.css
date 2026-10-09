@@ -30,7 +30,16 @@
 .gal-item img { display: block; height: 100%; width: auto; }
 .illus-fig { position: relative; margin: 0; }
 .illus-fig img { display: block; width: 100%; height: auto; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.8)); }
-.gal-note { position: absolute; top: 100%; right: 0; width: max-content; max-width: max(100%, 220px); margin-top: 1.2vh; color: #d8d8d8; font: 0.9rem/1.35 sans-serif; text-align: right; pointer-events: none; transition: opacity 0.25s ease; }
+.gal-note { position: absolute; top: 100%; right: 0; width: max-content; max-width: max(100%, 220px); margin-top: 1.2vh; color: #d8d8d8; font: 0.9rem/1.35 var(--font-sito, sans-serif); text-align: right; pointer-events: none; transition: opacity 0.25s ease; }
 .illus-view .gal-note { font-size: 1.05rem; max-width: max(100%, 260px); transition: opacity 0.4s ease; }
 
 @media (max-width: 660px) { .h-gallery { --top: 11vh; --bottom: 23vh; } .gal-spacer { width: 8vw; } .gal-note { font-size: 0.8rem; } }
+
+/* ILLUSTRAZIONI IN SCHERMO VERTICALE: una colonna che scorre dal basso verso l'alto (si trascina il dito verso l'alto) */
+@media (orientation: portrait) {
+    .h-gallery { --wspace: 66vw; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; cursor: auto; }
+    .gal-track { flex-direction: column; align-items: flex-start; width: 100%; height: max-content; padding: var(--top) 0 var(--bottom) 17vw; }
+    .gal-spacer { width: 100%; height: 3vh; }
+    .gal-item { height: auto; width: calc(var(--wspace) * (0.2 + var(--k))); margin: var(--gx) 0 0 calc(var(--wspace) * (0.8 - var(--k)) * 2 * var(--oy)); }
+    .gal-item img { width: 100%; height: auto; }
+}

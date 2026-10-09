@@ -1,6 +1,7 @@
 /* SHOP: griglia in basso, scheda del prodotto sopra (immagine a destra, testo a sinistra) */
+:root { --shop-w: min(1000px, 70vw); }
 .shop-select {
-    --w: min(1100px, 74vw);                 /* larghezza dell'area, tra le tende */
+    --w: var(--shop-w);                     /* larghezza dell'area, tra le tende */
     position: fixed; inset: 0;
     z-index: var(--content-z-index);
     box-sizing: border-box;
@@ -15,7 +16,9 @@
     display: grid;
     grid-template-columns: 1fr 1fr;         /* testo | immagine */
     grid-template-rows: minmax(0, 1fr);
-    gap: 4vw; align-items: center;
+    gap: 3vw; align-items: center;
+    padding: 0 72px;                        /* corridoi laterali dove stanno le frecce */
+    box-sizing: border-box;
     visibility: hidden;
 }
 .shop-select.open .shop-stage { flex: 1 1 auto; visibility: visible; margin-bottom: 3vh; }
@@ -26,7 +29,6 @@
     font-size: clamp(1.4rem, 3vw, 2.4rem);
 }
 .shop-desc { margin: 0; color: #ccc; line-height: 1.5; white-space: pre-line; font-size: clamp(0.95rem, 1.3vw, 1.15rem); }
-.shop-price { margin: 2vh 0 0; color: #f3d98a; font-size: 1.3rem; }
 
 .shop-big { height: 100%; min-height: 0; display: flex; justify-content: flex-end; align-items: center; }
 .shop-big-img {
@@ -44,14 +46,14 @@
 .shop-thumbs {
     --thumb: clamp(84px, 14vh, 140px);
     flex: none; width: var(--w); max-height: 32vh; box-sizing: border-box;
-    padding: 14px 8px;
+    padding: 20px 18px;
     display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
     overflow-y: auto; scrollbar-width: none;
 }
 .shop-thumbs::-webkit-scrollbar { display: none; }
 
 .shop-thumb {
-    flex: none; width: var(--thumb); height: var(--thumb);
+    flex: none; width: var(--thumb); width: var(--thumb);
     padding: 0; border: none; background: none; cursor: pointer;
     border-radius: 6px;
     outline: 2px solid transparent; outline-offset: 5px;
@@ -68,11 +70,30 @@
 .shop-select.open .shop-thumb:not(.selected) { filter: brightness(0.6); }
 .shop-select.open .shop-thumb:not(.selected):hover { filter: brightness(0.9); }
 
-/* ---------- Telefono: immagine sopra, testo sotto ---------- */
+/* ---------- Frecce: a metà altezza dell'immagine, dentro i corridoi laterali (la posizione verticale la mette shop.js) ---------- */
+.shop-arrow {
+    position: fixed; top: 50vh; z-index: 110;
+    width: 64px; margin-top: -32px; padding: 0;
+    background: none; border: none; cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.3, 2, 0.4, 1), opacity 0.3s;
+}
+.shop-arrow img { width: 100%; height: auto; display: block; }
+.shop-arrow-txt { display: block; color: #f3d98a; font-size: 3rem; line-height: 1; text-shadow: 0 3px 4px rgba(0,0,0,.7); }
+/* left e top li calcola shop.js: stanno ai lati dei quadrati da selezionare */
+.shop-arrow.next img, .shop-arrow.next .shop-arrow-txt { transform: scaleX(-1); }
+.shop-arrow:hover { transform: scale(1.15); }
+.shop-arrow:active { transform: scale(0.9); }
+.shop-arrow.off { opacity: 0; pointer-events: none; }
+
+/* ---------- Telefono: immagine sopra, testo sotto; se non entra tutto, scorre la scheda ---------- */
 @media (max-width: 660px) {
-    .shop-select { --w: 68vw; padding: 9vh 0 21vh; }
-    .shop-stage { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 2vh; }
-    .shop-big { order: -1; justify-content: center; }
-    .shop-info { justify-self: center; text-align: center; max-height: 26vh; overflow-y: auto; }
-    .shop-thumbs { --thumb: clamp(64px, 11vh, 90px); gap: 10px; }
+    :root { --shop-w: 68vw; }
+    .shop-select { padding: 9vh 0 21vh; }
+    .shop-stage { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: start; gap: 2vh; padding: 0; overflow-y: auto; scrollbar-width: none; }
+    .shop-stage::-webkit-scrollbar { display: none; }
+    .shop-big { order: -1; justify-content: center; height: auto; max-height: 34vh; }
+    .shop-big-img { max-height: 34vh; }
+    .shop-info { justify-self: center; text-align: center; max-height: none; overflow: visible; max-width: 100%; }
+    .shop-thumbs { --thumb: clamp(56px, 9vh, 76px); gap: 8px; max-height: none; overflow: visible; padding: 14px 6px; }
+    .shop-arrow { width: 40px; margin-top: -20px; }
 }

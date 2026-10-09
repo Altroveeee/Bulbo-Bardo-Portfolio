@@ -1,0 +1,24 @@
+/* FONT DEL SITO (vale per tutta la pagina)
+   Per cambiarlo: metti il file del font nella cartella "font" e chiamalo
+       font-sito.woff2   (oppure font-sito.woff / font-sito.ttf / font-sito.otf)
+   Basta questo: per cambiare font in futuro sostituisci quel file, senza toccare altro.
+   (Se il file non c'è, il sito usa il font standard.)
+
+   Alternativa con Google Fonts: togli il commento alla riga @import qui sotto, metti il nome
+   del font in --font-sito e lascia stare il file nella cartella. */
+
+/* @import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap'); */
+
+@font-face {
+    font-family: 'FontSito';
+    src: url('font/font-sito.woff2') format('woff2'),
+         url('font/font-sito.woff')  format('woff'),
+         url('font/font-sito.ttf')   format('truetype'),
+         url('font/font-sito.otf')   format('opentype');
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+:root { --font-sito: 'FontSito', sans-serif; }   /* con Google Fonts:  --font-sito: 'Caveat', sans-serif; */
+
+html, body, button, input, textarea, select { font-family: var(--font-sito); }

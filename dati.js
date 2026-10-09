@@ -3,25 +3,25 @@ const siteData = {
         {
             "id": "sticker_1791480264552",
             "src": "sticker10.png",
-            "startX": 14,
-            "startY": 17,
+            "startX": 10,
+            "startY": 10,
             "rotDesktop": 0,
-            "wDesktop": 144,
-            "startX_mobile": 30,
-            "startY_mobile": 35,
+            "wDesktop": 160,
+            "startX_mobile": 33,
+            "startY_mobile": 30,
             "rotMobile": 0,
-            "wMobile": 74,
+            "wMobile": 120,
             "targetPage": "fumetti"
         },
         {
             "id": "sticker_1791480354801",
             "src": "sticker9.png",
             "startX": 74,
-            "startY": 18,
+            "startY": 1,
             "rotDesktop": 0,
-            "wDesktop": 144,
-            "startX_mobile": 55,
-            "startY_mobile": 10,
+            "wDesktop": 190,
+            "startX_mobile": 90,
+            "startY_mobile": 1,
             "rotMobile": 0,
             "wMobile": 89,
             "targetPage": "fumetti"
@@ -29,38 +29,38 @@ const siteData = {
         {
             "id": "sticker_1791463484226",
             "src": "sticker_3.png",
-            "startX": 40,
-            "startY": 33,
+            "startX": 36,
+            "startY": 25,
             "rotDesktop": 0,
-            "wDesktop": 590,
-            "startX_mobile": 35,
-            "startY_mobile": 36,
+            "wDesktop": 610,
+            "startX_mobile": 45,
+            "startY_mobile": 33,
             "rotMobile": 0,
-            "wMobile": 303,
+            "wMobile": 400,
             "targetPage": "fumetti"
         },
         {
             "id": "sticker_1791463532793",
             "src": "sticker_2.png",
-            "startX": 20,
-            "startY": 10,
+            "startX": 15,
+            "startY": 0,
             "rotDesktop": 0,
-            "wDesktop": 504,
-            "startX_mobile": 24,
-            "startY_mobile": 20,
+            "wDesktop": 560,
+            "startX_mobile": 22,
+            "startY_mobile": 15,
             "rotMobile": 0,
-            "wMobile": 259,
+            "wMobile": 320,
             "targetPage": "fumetti"
         },
         {
             "id": "sticker_1791463604575",
             "src": "sticker_1.png",
-            "startX": 21,
-            "startY": 36,
+            "startX": 18,
+            "startY": 28,
             "rotDesktop": 0,
-            "wDesktop": 202,
-            "startX_mobile": 36,
-            "startY_mobile": 51,
+            "wDesktop": 200,
+            "startX_mobile": 55,
+            "startY_mobile": 56,
             "rotMobile": 0,
             "wMobile": 111,
             "targetPage": "fumetti"
@@ -68,12 +68,12 @@ const siteData = {
         {
             "id": "sticker_1791463637076",
             "src": "sticker_5.png",
-            "startX": 44,
-            "startY": 5,
+            "startX": 40,
+            "startY": 0,
             "rotDesktop": 0,
-            "wDesktop": 475,
-            "startX_mobile": 30,
-            "startY_mobile": 6,
+            "wDesktop": 490,
+            "startX_mobile": 40,
+            "startY_mobile": 0,
             "rotMobile": 0,
             "wMobile": 318,
             "targetPage": "fumetti"
@@ -81,40 +81,40 @@ const siteData = {
         {
             "id": "sticker_1791480231838",
             "src": "sticker11.png",
-            "startX": 34,
-            "startY": 43,
+            "startX": 31,
+            "startY": 38,
             "rotDesktop": 0,
-            "wDesktop": 245,
-            "startX_mobile": 50,
-            "startY_mobile": 60,
+            "wDesktop": 250,
+            "startX_mobile": 80,
+            "startY_mobile": 63,
             "rotMobile": 0,
-            "wMobile": 126,
+            "wMobile": 190,
             "targetPage": "fumetti"
         },
         {
             "id": "sticker_1791480298651",
             "src": "sticker12.png",
-            "startX": 39,
-            "startY": 23,
+            "startX": 30,
+            "startY": 15,
             "rotDesktop": 0,
             "wDesktop": 346,
-            "startX_mobile": 45,
-            "startY_mobile": 29,
+            "startX_mobile": 68,
+            "startY_mobile": 24,
             "rotMobile": 0,
-            "wMobile": 177,
+            "wMobile": 230,
             "targetPage": "fumetti"
         },
         {
             "id": "sticker_1791480323069",
             "src": "sticker_8.png",
-            "startX": 19,
-            "startY": 56,
+            "startX": 16,
+            "startY": 51,
             "rotDesktop": 0,
-            "wDesktop": 202,
-            "startX_mobile": 33,
-            "startY_mobile": 65,
+            "wDesktop": 180,
+            "startX_mobile": 47,
+            "startY_mobile": 72,
             "rotMobile": 0,
-            "wMobile": 103,
+            "wMobile": 120,
             "targetPage": "fumetti"
         }
     ],
@@ -125,24 +125,9 @@ const siteData = {
             "descrizione": "Botte forti"
         },
         {
-            "id": 1791393784555,
-            "src": "fuckice.jpg",
-            "descrizione": "Fuck ICE"
-        },
-        {
-            "id": 1791393847555,
-            "src": "gnam.jpg",
-            "descrizione": "Fuck ICE"
-        },
-        {
             "id": 1791393932520,
             "src": "link.jpg",
             "descrizione": "Fanart di Link"
-        },
-        {
-            "id": 1791394001420,
-            "src": "rock.jpg",
-            "descrizione": "L'ultimo concerto"
         },
         {
             "id": 1791399474954,
@@ -150,51 +135,60 @@ const siteData = {
             "descrizione": "Fanart di Lemillion"
         },
         {
-            "id": 1791460927214,
-            "src": "no.jpg",
-            "descrizione": ""
-        },
-        {
-            "id": 1791460953931,
-            "src": "thefly.jpg",
-            "descrizione": ""
-        },
-        {
-            "id": 1791460998065,
-            "src": "rock2.jpg",
-            "descrizione": ""
+            "id": 1791393784555,
+            "src": "fuckice.jpg",
+            "descrizione": "Fuck ICE"
         }
     ],
     "shop": [
         {
-            "id": 1791498928479,
-            "src": "ilviolinista.png",
-            "descrizione": "suona un sacco",
-            "titolo": "Il Violinista"
-        },
-        {
-            "id": 1791498946611,
-            "src": "scultrice.png",
-            "descrizione": "Scultrice un sacco",
-            "titolo": "La Scultrice"
-        },
-        {
-            "id": 1791498970927,
-            "src": "ilpoeta.png",
-            "descrizione": "Sniffa",
-            "titolo": "Il Poeta"
+            "id": 1791499004796,
+            "src": "bulbo.png",
+            "descrizione": "Il depresso, a volte",
+            "titolo": "Bulbo",
+            "miniatura": "bulbo_prev.png"
         },
         {
             "id": 1791498989129,
             "src": "cuoio.png",
             "descrizione": "Er maranza",
-            "titolo": "Cuoio"
+            "titolo": "Cuoio",
+            "miniatura": "cuoio_prev.png"
         },
         {
-            "id": 1791499004796,
-            "src": "bulbo.png",
-            "descrizione": "Il depresso, a volte",
-            "titolo": "Bulbo"
+            "id": 1791538861668,
+            "src": "giorgio.png",
+            "descrizione": "quando meno te lo aspetti",
+            "titolo": "giorgio",
+            "miniatura": "sticker_8.png"
+        },
+        {
+            "id": 1791498970927,
+            "src": "ilpoeta.png",
+            "descrizione": "abbandonato dalla musa",
+            "titolo": "Il Poeta",
+            "miniatura": "ilpoeta_prev.png"
+        },
+        {
+            "id": 1791498928479,
+            "src": "ilviolinista.png",
+            "descrizione": "Che ha ceduto tutto",
+            "titolo": "Il Violinista",
+            "miniatura": "ilviolinista_prev.png"
+        },
+        {
+            "id": 1791498946611,
+            "src": "scultrice.png",
+            "descrizione": "delle crepe",
+            "titolo": "La Scultrice",
+            "miniatura": "lascultrice_prev.png"
+        },
+        {
+            "id": 1791549154331,
+            "src": "lavoce.png",
+            "descrizione": "della ragione",
+            "titolo": "la voce",
+            "miniatura": "lavoce_prev.png"
         }
     ],
     "fumetti": [
@@ -215,9 +209,9 @@ const siteData = {
         },
         {
             "id": 1791452067464,
-            "titolo": "Solo la Vera Arte Apre",
+            "titolo": "La porta",
             "copertina": "sololaveraarte_1.jpg",
-            "descrizione": "",
+            "descrizione": "HO DATO FORMA AL MIO RESPIRO, L'HO STESO SULLA TELA COME OMBRA DI CARNE, MA LA PORTA ANCORA TACE.",
             "pagine": [
                 "sololaveraarte_2.jpg",
                 "sololaveraarte_3.jpg",

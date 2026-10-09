@@ -66,9 +66,10 @@ function aggiungiSingola() {
     if (!img) return alert("Trascina prima l'immagine!");
     const o = { id: Date.now(), src: img, descrizione: $('singola-desc').value };
     if (sez === 'shop') {
-        const t = $('singola-titolo').value.trim(); const p = $('singola-prezzo').value.trim();
+        const t = $('singola-titolo').value.trim();
         if (t) o.titolo = t;
-        if (p) o.prezzo = p;
+        const m = $('singola-miniatura'); const mn = m ? m.value.trim() : '';
+        if (mn) o.miniatura = mn;   // la preview (quadrato) dello shop; se manca si usa l'immagine grande
     }
     (siteData[sez] = siteData[sez] || []).push(o);
     finisciAggiunta(sez);
@@ -111,8 +112,9 @@ function resetForm(sez) {
         anteprimaFumetto.cover = null; anteprimaFumetto.pagine = [];
         renderAnteprimaFumetto();
     } else {
-        ['singola-img', 'singola-desc', 'singola-titolo', 'singola-prezzo'].forEach(id => { $(id).value = ''; });
-        resetZona('drop-singola');
+        ['singola-img', 'singola-desc', 'singola-titolo', 'singola-miniatura'].forEach(id => { const n = $(id); if (n) n.value = ''; });
+        resetZona('drop-singola'); resetZona('drop-miniatura');
+        ['anteprima-singola', 'anteprima-miniatura'].forEach(id => { const i = $(id); if (i) { i.removeAttribute('src'); i.style.display = 'none'; } });
     }
 }
 
@@ -321,7 +323,7 @@ const SEZIONI = { stickers: 'Sticker', illustrazioni: 'Illustrazioni', shop: 'Pe
 const HINTS = {
     stickers: "Nella home gli sticker in FONDO alla lista stanno DAVANTI agli altri. Trascina ☰ o usa ▲▼ per cambiare chi sta sopra. Il nome serve solo a te per riconoscerli. Premi + per aggiungerne uno.",
     illustrazioni: "L'ordine della lista è l'ordine in cui le illustrazioni scorrono nella galleria. La descrizione appare come nota sotto il disegno. Premi + per aggiungerne una.",
-    shop: "L'ordine della lista è l'ordine delle miniature nello shop. Titolo, descrizione e prezzo compaiono nella scheda del prodotto (se vuoti, non si vedono). Premi + per aggiungere un prodotto.",
+    shop: "L'ordine della lista è l'ordine delle miniature nello shop. Titolo e descrizione compaiono nella scheda del personaggio (se vuoti, non si vedono). La preview è il quadrato che si seleziona: trascina un file nella zona sotto il personaggio per cambiarla (se manca si usa l'immagine grande). Premi + per aggiungere un personaggio.",
     fumetti: "L'ordine della lista è l'ordine sullo scaffale. Apri \"Pagine\" per riordinare o togliere le pagine di un fumetto (il file immagine NON viene cancellato dalla cartella). Premi + per aggiungerne uno."
 };
 const PANNELLI = { stickers: 'pannello-stickers', illustrazioni: 'pannello-singola', shop: 'pannello-singola', fumetti: 'pannello-fumetti' };
@@ -342,8 +344,11 @@ function muovi(arr, da, a) {
     segnaModificato();
 }
 
+// Immagini appena trascinate (non ancora nella cartella del sito): si vedono comunque in anteprima
+const anteprimeLocali = {};
+
 function miniatura(src) {
-    return el('img', { className: 'thumb', src: 'immagini/' + src, draggable: false, onerror: function () { this.style.visibility = 'hidden'; } });
+    return el('img', { className: 'thumb', src: anteprimeLocali[src] || ('immagini/' + src), draggable: false, onerror: function () { this.style.visibility = 'hidden'; } });
 }
 
 function campo(obj, chiave, placeholder, tag = 'input') {
@@ -418,9 +423,86 @@ function corpoSingola(obj, conTesti) {
     const body = el('div', { className: 'item-body' });
     if (conTesti) body.append(campo(obj, 'titolo', 'Titolo (facoltativo)'));
     body.append(campo(obj, 'descrizione', 'Descrizione'));
-    if (conTesti) body.append(campo(obj, 'prezzo', 'Prezzo (es: 15 €)'));
     body.append(el('span', { className: 'fname', textContent: obj.src }));
+    if (conTesti) body.append(zonaPreview(obj));
     return body;
+}
+
+// Preview (quadrato nello shop) di un personaggio già in lista: trascina un file per cambiarla
+function zonaPreview(obj) {
+    const zona = el('div', { className: 'drop-zone' });
+    zona.style.cssText = 'padding:6px 10px; min-height:0; font-size:0.8rem;';
+    zona.textContent = obj.miniatura ? `Preview: ${obj.miniatura} (trascina un file per cambiarla)` : 'Trascina qui la preview del personaggio (facoltativa)';
+    zona.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); zona.classList.add('dragover'); });
+    zona.addEventListener('dragleave', () => zona.classList.remove('dragover'));
+    zona.addEventListener('drop', e => {
+        e.preventDefault(); e.stopPropagation(); zona.classList.remove('dragover');
+        const file = e.dataTransfer.files[0]; if (!file) return;
+        leggiFile(file).then(f => {
+            if (f.src) anteprimeLocali[f.nome] = f.src;
+            obj.miniatura = f.nome; segnaModificato(); renderGestione();
+        });
+    });
+    if (!obj.miniatura) return zona;
+    const togli = el('button', { className: 'row-btn', textContent: '✖ togli preview', title: 'Usa di nuovo l\'immagine grande come quadrato' });
+    togli.style.cssText = 'margin-top:4px; width:auto; padding:2px 8px; font-size:0.75rem;';
+    togli.addEventListener('click', () => { delete obj.miniatura; segnaModificato(); renderGestione(); });
+    return el('div', {}, zona, togli);
+}
+
+// Form "Nuovo personaggio": via il prezzo, dentro anteprima dell'immagine e punto per la preview
+function preparaFormPersonaggio() {
+    const pannello = $('pannello-singola'); if (!pannello) return;
+    // 1. toglie il campo prezzo (e la sua etichetta)
+    const prezzo = $('singola-prezzo');
+    if (prezzo) {
+        const lab = document.querySelector('label[for="singola-prezzo"]');
+        const prec = prezzo.previousElementSibling;
+        if (lab) lab.remove();
+        else if (prec && !prec.querySelector('input, textarea, select') && /prezzo/i.test(prec.textContent)) prec.remove();
+        const box = prezzo.parentElement;
+        prezzo.remove();
+        if (box && box !== pannello && box.classList.contains('solo-shop') && !box.querySelector('input, textarea, select, button')) box.remove();
+    }
+    if ($('drop-miniatura')) return;
+    // 2. anteprima dell'immagine grande, sotto la zona di trascinamento
+    const stile = 'display:none; max-width:160px; max-height:160px; margin:8px 0; object-fit:contain; border-radius:4px; background:rgba(128,128,128,0.15);';
+    const anteprima = el('img', { id: 'anteprima-singola', alt: '', draggable: false });
+    anteprima.style.cssText = stile;
+    const zonaImg = $('drop-singola');
+    if (zonaImg) zonaImg.after(anteprima); else pannello.append(anteprima);
+    // 3. preview del personaggio (solo per i personaggi dello shop)
+    const blocco = el('div', { className: 'solo-shop' });
+    blocco.style.display = 'none';
+    const titolo = el('p', { textContent: 'Preview del personaggio (il quadrato che si seleziona nello shop)' });
+    titolo.style.cssText = 'margin:12px 0 6px; font-weight:bold;';
+    const zona = el('div', { id: 'drop-miniatura', className: 'drop-zone', textContent: 'Trascina qui la preview (facoltativa: se manca si usa l\'immagine grande)' });
+    zona.dataset.orig = zona.textContent;
+    const campoNome = el('input', { id: 'singola-miniatura', type: 'hidden' });
+    const anteprimaMin = el('img', { id: 'anteprima-miniatura', alt: '', draggable: false });
+    anteprimaMin.style.cssText = stile.replace('160px', '100px').replace('160px', '100px');
+    blocco.append(titolo, zona, campoNome, anteprimaMin);
+    const bottone = pannello.querySelector('button[onclick*="aggiungiSingola"]');
+    if (bottone) bottone.before(blocco); else pannello.append(blocco);
+}
+
+// Mostra l'anteprima di un file trascinato su una zona (si somma agli altri gestori della zona)
+function anteprimaImmagine(zonaId, imgId, inputId) {
+    const zona = $(zonaId); const img = $(imgId); const input = inputId && $(inputId);
+    if (!zona || !img) return;
+    zona.addEventListener('dragover', e => { e.preventDefault(); zona.classList.add('dragover'); });
+    zona.addEventListener('dragleave', () => zona.classList.remove('dragover'));
+    zona.addEventListener('drop', e => {
+        e.preventDefault(); zona.classList.remove('dragover');
+        const file = e.dataTransfer.files[0]; if (!file) return;
+        const nome = file.name;
+        if (input) { input.value = nome; zona.textContent = `File letto: ${nome}`; }
+        leggiFile(file).then(f => {
+            if (!f.src) return;
+            anteprimeLocali[nome] = f.src;
+            img.src = f.src; img.style.display = 'block';
+        });
+    });
 }
 
 function disegnaPagine(box, f, summary) {
@@ -475,7 +557,7 @@ function renderGestione() {
     if (!arr.length) box.append(el('p', { className: 'vuoto', textContent: 'Qui non c\'è ancora niente...' }));
 
     arr.forEach((obj, i) => {
-        const miniaturaSrc = sezioneAttiva === 'fumetti' ? obj.copertina : obj.src;
+        const miniaturaSrc = sezioneAttiva === 'fumetti' ? obj.copertina : (sezioneAttiva === 'shop' && obj.miniatura ? obj.miniatura : obj.src);
         let corpo, nome;
         if (sezioneAttiva === 'stickers') { corpo = corpoSticker(obj); nome = 'lo sticker "' + (obj.nome || obj.src) + '"'; }
         else if (sezioneAttiva === 'fumetti') { corpo = corpoFumetto(obj); nome = 'il fumetto "' + (obj.titolo || obj.copertina) + '"'; }
@@ -499,7 +581,11 @@ const mappe = [
     creaMappa('sticker-preview-mobile', 'nuovo-sticker-mobile', RIF.tel, 'sticker-x-mobile', 'sticker-y-mobile', 'sticker-rot-mobile', 'sticker-w-mobile')
 ];
 abilitaDragAndDropSticker('drop-sticker', 'sticker-img');
+preparaFormPersonaggio();
 abilitaDragAndDrop('drop-singola', 'singola-img');
+anteprimaImmagine('drop-singola', 'anteprima-singola');
+abilitaDragAndDrop('drop-miniatura', 'singola-miniatura');
+anteprimaImmagine('drop-miniatura', 'anteprima-miniatura');
 abilitaDragAndDrop('drop-fumetto-cover', 'fumetto-cover');
 abilitaDragAndDropFumetto('drop-fumetto-pagine', 'fumetto-pagine');
 abilitaAnteprimaCover('drop-fumetto-cover');

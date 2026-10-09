@@ -2,8 +2,8 @@
    L'apertura (translateX) è già in stile-base.css; qui ci sono solo le immagini e la barra. */
 
 /* I due disegni dei drappeggi chiusi: sostituisci i file mantenendo i nomi */
-.intro-left  { background: url('immagini/interfaccia/sipario-sinistra.png') center / 100% 100% no-repeat; }
-.intro-right { background: url('immagini/interfaccia/sipario-destra.png')   center / 100% 100% no-repeat; }
+.intro-left  { background: url('immagini/interfaccia/sipario-sinistra.png') right top / cover no-repeat; }
+.intro-right { background: url('immagini/interfaccia/sipario-destra.png') left top / cover no-repeat; }
 
 /* Mentre carica, i drappeggi "respirano" appena */
 #intro-curtains:not(.loaded):not(.open) .intro-half { animation: siparioRespiro 2.4s ease-in-out infinite; }

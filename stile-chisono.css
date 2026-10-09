@@ -36,12 +36,15 @@
 .chi-big { height: 100%; min-height: 0; display: flex; justify-content: flex-end; align-items: center; }
 .chi-img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.8)); }
 
-/* ---------- Telefono: immagine sopra, testo e icone sotto ---------- */
+/* ---------- Telefono: immagine sopra, testo e icone sotto; se non entra tutto, scorre la pagina ---------- */
 @media (max-width: 660px) {
-    .chi-sono { --w: 68vw; padding: 9vh 0 21vh; }
-    .chi-grid { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 2vh; }
-    .chi-big { order: -1; justify-content: center; }
-    .chi-info { justify-self: center; text-align: center; max-height: 30vh; }
+    .chi-sono { --w: 72vw; padding: 9vh 0 0; overflow-y: auto; scrollbar-width: none; align-items: flex-start; }
+    .chi-sono::-webkit-scrollbar { display: none; }
+    .chi-grid { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: start; align-items: start; gap: 2vh; padding-bottom: 22vh; }
+    .chi-big { order: -1; justify-content: center; height: auto; max-height: 36vh; }
+    .chi-img { max-height: 36vh; }
+    .chi-info { justify-self: center; text-align: center; max-height: none; max-width: 100%; }
+    .chi-testo { overflow: visible; }
     .chi-social { justify-content: center; margin-top: 2vh; gap: 16px; }
     .chi-link img { width: 44px; }
 }

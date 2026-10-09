@@ -23,6 +23,9 @@
 .leaf.peek-next { transform: rotateY(-14deg); }
 .leaf.flipped.peek-prev { transform: rotateY(-166deg); }
 .leaf.peek-next, .leaf.peek-prev { transition-duration: 0.35s; }
+/* Chiusura del libro: pagine più veloci, sul livello grafico dedicato e senza le ombre sovrapposte (più fluido) */
+.book.closing .leaf { transition-duration: 0.6s; will-change: transform; }
+.book.closing .face::after { display: none; }
 .book-counter { color: white; min-width: 3ch; text-align: center; }
 .book-desc { margin: 0; max-width: min(600px, 50vw); color: #ccc; font-size: 0.95rem; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pending { opacity: 0 !important; pointer-events: none !important; }

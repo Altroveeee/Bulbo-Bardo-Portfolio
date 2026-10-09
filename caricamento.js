@@ -21,7 +21,7 @@
         (siteData.stickers || []).forEach(s => urls.add('immagini/' + s.src));   // la home si vede subito
         if (PRECARICA_TUTTO) {
             (siteData.fumetti || []).forEach(f => urls.add('immagini/' + f.copertina));
-            ['illustrazioni', 'shop'].forEach(k => (siteData[k] || []).forEach(x => urls.add('immagini/' + (x.copertina || x.src))));
+            ['illustrazioni', 'shop'].forEach(k => (siteData[k] || []).forEach(x => urls.add('immagini/' + (x.miniatura || x.copertina || x.src))));
         }
     }
     const lista = [...urls];
@@ -42,7 +42,8 @@
         img.src = url;
     });
 
-    const assets = Promise.all(lista.map(carica));
+    const font = (document.fonts && document.fonts.load) ? document.fonts.load('16px FontSito').catch(() => {}) : Promise.resolve();   // il font è pronto prima di aprire il sipario
+    const assets = Promise.all([...lista.map(carica), font]);
     const pagina = new Promise(res => document.readyState === 'complete' ? res() : window.addEventListener('load', res, { once: true }));
     const minimo = new Promise(res => setTimeout(res, MIN_MS));
     const massimo = new Promise(res => setTimeout(res, MAX_MS));
