@@ -31,7 +31,7 @@
 .leaf { position: absolute; top: 0; left: 50%; width: 50%; height: 100%; transform-origin: left center; transform-style: preserve-3d; transition: transform 0.9s cubic-bezier(0.45, 0, 0.2, 1); }
 .book.single .leaf { left: 0; width: 100%; }
 .leaf.flipped { transform: rotateY(-180deg); }
-
+.leaf.far { display: none; }   /* pagine lontane: fuori dal rendering (libro.js) */
 /* Sfondo nero imposto alla pagina per mimetizzare i margini del contenimento */
 .face { position: absolute; inset: 0; overflow: hidden; background: #000000; backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 0.25px solid rgba(255, 255, 255, 0.15); }
 .face.back { transform: rotateY(180deg); }
@@ -74,8 +74,11 @@
 .texts-hidden { opacity: 0; }
 body:has(.book-view) { background: #000; }
 
+/* Su touch (telefoni, anche in orizzontale) la descrizione è sempre a una colonna sola */
+@media (pointer: coarse) { .book-desc { column-count: 1; column-gap: 0; } }
+
 /* LAYOUT MOBILE: Demolizione delle colonne e ritorno all'ordine verticale */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .gallery-grid.cat-fumetti { 
         --row: clamp(120px, 22vh, 190px); 
         grid-template-columns: repeat(2, 1fr); 

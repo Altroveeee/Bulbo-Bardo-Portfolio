@@ -73,7 +73,7 @@
 /* ---------- Frecce: a metà altezza dell'immagine, dentro i corridoi laterali (la posizione verticale la mette shop.js) ---------- */
 .shop-arrow {
     position: fixed; top: 50vh; z-index: 110;
-    width: 64px; margin-top: -32px; padding: 0;
+    width: 64px; margin-top: 0; padding: 0;
     background: none; border: none; cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.3, 2, 0.4, 1), opacity 0.3s;
 }
@@ -88,12 +88,23 @@
 /* ---------- Telefono: immagine sopra, testo sotto; se non entra tutto, scorre la scheda ---------- */
 @media (max-width: 660px) {
     :root { --shop-w: 68vw; }
-    .shop-select { padding: 9vh 0 21vh; }
-    .shop-stage { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: start; gap: 2vh; padding: 0; overflow-y: auto; scrollbar-width: none; }
+    /* in basso: sotto resta solo lo spazio per le icone; la griglia sta sempre appoggiata lì (anche a scheda chiusa) */
+    .shop-select { padding: 9vh 0 calc(38px + 3vh + 18px + env(safe-area-inset-bottom, 0px)); justify-content: flex-end; }
+    /* immagine + testo in colonna, centrati nello spazio libero (se non entrano, la scheda scorre) */
+    .shop-stage { display: flex; flex-direction: column; align-items: center; gap: 2vh; padding: 0; overflow-y: auto; scrollbar-width: none; }
     .shop-stage::-webkit-scrollbar { display: none; }
-    .shop-big { order: -1; justify-content: center; height: auto; max-height: 34vh; }
-    .shop-big-img { max-height: 34vh; }
-    .shop-info { justify-self: center; text-align: center; max-height: none; overflow: visible; max-width: 100%; }
-    .shop-thumbs { --thumb: clamp(56px, 9vh, 76px); gap: 8px; max-height: none; overflow: visible; padding: 14px 6px; }
-    .shop-arrow { width: 40px; margin-top: -20px; }
+    .shop-big { order: -1; flex: none; margin-top: auto; justify-content: center; height: auto; max-width: 100%; }
+    .shop-big-img { max-height: 40vh; max-width: 100%; }
+    .shop-info { flex: none; margin-bottom: auto; text-align: center; max-height: none; overflow: visible; max-width: 100%; }
+    /* sempre 4 quadrati per riga, così anche le frecce cadono sempre allo stesso posto */
+    .shop-thumbs { --thumb: calc((100% - 24px) / 4); gap: 8px; max-height: 26vh; overflow-y: auto; padding: 12px 6px; }
+    .shop-thumb { aspect-ratio: 1; }
+    .shop-arrow { display: none; }   /* su telefono niente frecce: si tocca una miniatura, si scorre sulla scheda o si tocca fuori per chiudere */
+}
+@supports (height: 100dvh) {
+    @media (max-width: 660px) {
+        .shop-select { padding-top: 9dvh; }
+        .shop-big-img { max-height: 40dvh; }
+        .shop-thumbs { max-height: 26dvh; }
+    }
 }

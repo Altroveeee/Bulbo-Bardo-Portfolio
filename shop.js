@@ -11,6 +11,15 @@ const SHOP_ARROW_IMG = 'immagini/interfaccia/freccia.png';   // la freccia (quel
 
 let shopToken = 0;               // se clicchi in fretta, le animazioni vecchie si fermano
 
+// Un solo ascoltatore per tutta la vita della pagina (prima ne nasceva uno nuovo a ogni ingresso nello shop)
+let shopRootAttuale = null;
+{
+    let t = 0;
+    const riallinea = () => { clearTimeout(t); t = setTimeout(() => { if (shopRootAttuale && document.body.contains(shopRootAttuale)) { shopPlaceArrows(shopRootAttuale); requestAnimationFrame(() => shopPlaceArrows(shopRootAttuale)); } }, 120); };
+    window.addEventListener('resize', riallinea);
+    window.addEventListener('orientationchange', riallinea);
+}
+
 // Anima un elemento da uno stato all'altro e aspetta la fine (anche se viene annullata)
 function shopMove(el, from, to, ms, delay = 0) {
     return el.animate([from, to], { duration: ms, delay, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'both' })
@@ -55,13 +64,30 @@ function renderShop(dataArray, startIdx = -1) {
     });
     shopKeys(root, dataArray);
 
+    // Telefono: tocca fuori dalla scheda per chiuderla; scorri a destra/sinistra per cambiare personaggio
+    root.addEventListener('click', e => {
+        if (!matchMedia('(max-width: 660px), (pointer: coarse)').matches) return;
+        if (busy || !root.classList.contains('open')) return;
+        if (e.target.closest('.shop-thumbs, .shop-big-img, .shop-info')) return;
+        shopSelect(root, dataArray, Number(root.dataset.index));
+    });
+    const stageEl = root.querySelector('.shop-stage');
+    let sx0 = null, sy0 = 0;
+    stageEl.addEventListener('touchstart', e => { sx0 = e.touches[0].clientX; sy0 = e.touches[0].clientY; }, { passive: true });
+    stageEl.addEventListener('touchend', e => {
+        if (sx0 === null) return;
+        const t = e.changedTouches[0], dx = t.clientX - sx0, dy = t.clientY - sy0; sx0 = null;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) shopStep(root, dataArray, dx < 0 ? 1 : -1);
+    }, { passive: true });
+
     // Frecce ai lati (stanno nel viewport, sopra le tende, come la freccia "indietro")
     root._arrows = [-1, 1].map(dir => {
         const b = document.createElement('button');
         b.className = 'shop-arrow ' + (dir < 0 ? 'prev' : 'next') + ' off';
         b.setAttribute('aria-label', dir < 0 ? 'Personaggio precedente' : 'Personaggio successivo');
         b.innerHTML = `<img src="${SHOP_ARROW_IMG}" alt="" draggable="false">`;
-        b.firstChild.onerror = function () { this.replaceWith(Object.assign(document.createElement('span'), { className: 'shop-arrow-txt', textContent: '‹' })); };
+        b.firstChild.onerror = function () { this.replaceWith(Object.assign(document.createElement('span'), { className: 'shop-arrow-txt', textContent: '‹' })); shopPlaceArrows(root); };
+        b.firstChild.onload = () => shopPlaceArrows(root);   // quando l'immagine è pronta l'altezza cambia: si riallinea
         b.addEventListener('click', () => shopStep(root, dataArray, dir));
         viewport.appendChild(b);
         return b;
@@ -69,7 +95,7 @@ function renderShop(dataArray, startIdx = -1) {
 
     shopPlaceArrows(root);
     requestAnimationFrame(() => shopPlaceArrows(root));
-    window.addEventListener('resize', () => { if (document.body.contains(root)) shopPlaceArrows(root); });
+    shopRootAttuale = root;
 
     // Un personaggio è già aperto appena si entra (quello del link, oppure il primo)
     const first = dataArray.length && (startIdx >= 0 || SHOP_APRI_PRIMO) ? Math.max(0, startIdx) : -1;
@@ -115,15 +141,17 @@ function shopPlaceArrows(root) {
     const thumbs = root.querySelector('.shop-thumbs');
     const list = [...root.querySelectorAll('.shop-thumb')];
     if (!thumbs || !root._arrows || !list.length) return;
-    const GAP = 14;
+    const mob = matchMedia('(max-width: 660px)').matches;
+    const GAP = mob ? 6 : 14;
     const left = Math.min(...list.map(b => b.offsetLeft));
     const right = Math.max(...list.map(b => b.offsetLeft + b.offsetWidth));
     const y = thumbs.offsetTop + thumbs.offsetHeight / 2;
     root._arrows.forEach(a => {
-        const w = a.offsetWidth || 64;
+        const w = a.offsetWidth || (mob ? 36 : 64);
+        const h = a.offsetHeight || w;              // altezza reale: l'arrow resta centrato anche se l'immagine non è quadrata
         const x = a.classList.contains('prev') ? left - w - GAP : right + GAP;
-        a.style.left = Math.max(0, Math.min(window.innerWidth - w, x)) + 'px';
-        a.style.top = y + 'px';
+        a.style.left = Math.max(2, Math.min(window.innerWidth - w - 2, x)) + 'px';
+        a.style.top = (y - h / 2) + 'px';
     });
 }
 

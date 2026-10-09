@@ -91,28 +91,45 @@ function createBook(root, faces, ar) {
         else { const f = [faces[0], null, ...faces.slice(1)]; if (f.length % 2) f.push(null); for (let i = 0; i < f.length; i += 2) pairs.push([f[i], f[i + 1]]); }
         book.innerHTML = pairs.map(p => `<div class="leaf">${face('front', p[0])}${face('back', p[1])}</div>`).join('');
         leaves = [...book.children]; cur = Math.min(cur, maxCur());
-        leaves.forEach((el, i) => { el.classList.toggle('flipped', i < cur); el.style.zIndex = i < cur ? i : leaves.length - i; }); update();
+        leaves.forEach((el, i) => { el.classList.toggle('flipped', i < cur); el.style.zIndex = i < cur ? i : leaves.length - i; }); update(); showNear(); warmNear();
     }
+
+    // Solo le pagine vicine a quella aperta esistono per il browser (le altre sono display:none):
+    // meno strati 3D e meno immagini da decodificare insieme = niente scatti
+    function showNear() { leaves.forEach((l, i) => l.classList.toggle('far', i < cur - 3 || i > cur + 2)); }
+    function warmNear() { leaves.forEach((l, i) => { if (i >= cur - 2 && i <= cur + 3) l.querySelectorAll('img').forEach(im => { if (im.decode) im.decode().catch(() => {}); }); }); }
     
     function update() { book.classList.toggle('at-start', !single && cur === 0); book.classList.toggle('at-end', !single && cur === leaves.length); const page = single ? cur + 1 : (cur === 0 ? 1 : Math.min(2 * cur, total)); counter.textContent = `${page} / ${total}`; }
     function peek(dir) { leaves.forEach(l => l.classList.remove('peek-next', 'peek-prev')); if (dir > 0 && cur < maxCur()) leaves[cur].classList.add('peek-next'); if (dir < 0 && cur > 0) leaves[cur - 1].classList.add('peek-prev'); }
     let closing = false;   // durante la chiusura i clic/tasti non girano le pagine
-    function go(d, force) { if (closing && !force) return; const next = cur + d; if (next < 0 || next > maxCur()) return; peek(0); const i = d > 0 ? cur : next; const el = leaves[i]; el.style.zIndex = leaves.length + 1; el.classList.toggle('flipped', d > 0); cur = next; update(); setTimeout(() => { if (el.classList.contains('flipped') === (d > 0)) el.style.zIndex = d > 0 ? i : leaves.length - i; }, 900); }
+    function go(d, force) { if (closing && !force) return; const next = cur + d; if (next < 0 || next > maxCur()) return; peek(0); const i = d > 0 ? cur : next; const el = leaves[i]; el.style.zIndex = leaves.length + 1; el.classList.toggle('flipped', d > 0); cur = next; update(); showNear(); warmNear(); setTimeout(() => { if (el.classList.contains('flipped') === (d > 0)) el.style.zIndex = d > 0 ? i : leaves.length - i; }, 900); }
     
     root.addEventListener('pointermove', e => { if (e.pointerType !== 'mouse' || single) return; const r = book.getBoundingClientRect(); let left = r.left, right = r.right; if (cur === 0) left += r.width / 2; if (cur === leaves.length) right -= r.width / 2; const near = e.clientX > left - NEAR && e.clientX < right + NEAR && e.clientY > r.top - NEAR && e.clientY < r.bottom + NEAR; if (!near) return peek(0); peek(e.clientX < r.left + r.width / 2 ? -1 : 1); });
     root.addEventListener('pointerleave', () => peek(0));
     let sx = null; book.addEventListener('pointerdown', e => { sx = e.clientX; }); book.addEventListener('pointerup', e => { if (sx === null) return; const dx = e.clientX - sx; sx = null; if (Math.abs(dx) > 40) return go(dx < 0 ? 1 : -1); const r = book.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width; go(x < (single ? 0.3 : 0.5) ? -1 : 1); });
     const onKey = e => { if (!document.body.contains(book)) return cleanup(); if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); };
-    const onResize = () => { if (!document.body.contains(book)) return cleanup(); build(); };
+    // Su telefono la barra del browser che appare/scompare fa partire "resize": si ricostruisce solo se la misura cambia davvero
+    let lastW = window.innerWidth, lastH = window.innerHeight, resizeT = 0;
+    const onResize = () => {
+        if (!document.body.contains(book)) return cleanup();
+        clearTimeout(resizeT);
+        resizeT = setTimeout(() => {
+            const w = window.innerWidth, h = window.innerHeight;
+            if (w === lastW && Math.abs(h - lastH) < 150) return;
+            lastW = w; lastH = h; build();
+        }, 200);
+    };
     function cleanup() { document.removeEventListener('keydown', onKey); window.removeEventListener('resize', onResize); }
     document.addEventListener('keydown', onKey); window.addEventListener('resize', onResize);
 
     // Chiusura: si vedono girare indietro solo le ultime pagine (al massimo 3, veloci), le altre tornano chiuse subito sotto.
     // Così il libro si richiude "da dove eri" ma senza far scorrere decine di pagine in 3D (che faceva scattare).
     // Le foto di tutte le pagine vengono decodificate prima, così durante il giro sono già pronte (senza apparire dopo, una alla volta)
-    const warm = () => Promise.all([...book.querySelectorAll('.face img')].map(i => i.decode().catch(() => {})));
-    book._warm = warm;
-    book._closeAll = () => warm().then(() => nextFrames(2)).then(() => new Promise(res => {
+    book._warm = warmNear;
+    book._closeAll = () => Promise.resolve().then(() => {
+        leaves[0].classList.remove('far');
+        return Promise.all([...leaves[0].querySelectorAll('img')].map(i => i.decode().catch(() => {})));
+    }).then(() => nextFrames(2)).then(() => new Promise(res => {
         closing = true; peek(0);
         if (cur <= 0) return nextFrames(2).then(res);
         
@@ -145,5 +162,4 @@ function createBook(root, faces, ar) {
         }, DUR + 100);
     }));
     build();
-    warm();   // appena aperto, le foto di tutte le pagine si preparano subito
 }

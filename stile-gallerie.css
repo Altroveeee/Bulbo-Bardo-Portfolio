@@ -37,9 +37,12 @@
 
 /* ILLUSTRAZIONI IN SCHERMO VERTICALE: una colonna che scorre dal basso verso l'alto (si trascina il dito verso l'alto) */
 @media (orientation: portrait) {
-    .h-gallery { --wspace: 66vw; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; cursor: auto; }
+    .h-gallery { --top: 7vh; --wspace: 66vw; overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; cursor: auto; }
     .gal-track { flex-direction: column; align-items: flex-start; width: 100%; height: max-content; padding: var(--top) 0 var(--bottom) 17vw; }
     .gal-spacer { width: 100%; height: 3vh; }
     .gal-item { height: auto; width: calc(var(--wspace) * (0.2 + var(--k))); margin: var(--gx) 0 0 calc(var(--wspace) * (0.8 - var(--k)) * 2 * var(--oy)); }
     .gal-item img { width: 100%; height: auto; }
+    /* la prima illustrazione parte subito sotto la tenda */
+    .gal-track > .gal-spacer:first-child { height: 0; }
+    .gal-spacer + .gal-item { margin-top: 0; }
 }

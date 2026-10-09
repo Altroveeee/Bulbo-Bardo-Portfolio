@@ -1,68 +1,75 @@
 // CARICAMENTO: i drappeggi restano chiusi mentre la pagina si prepara, poi si aprono.
-// Si aprono quando sono pronti: pagina caricata + immagini principali + tempo minimo.
+// Dietro le tende vengono scaricate E decodificate le immagini che servono subito
+// (home, copertine, illustrazioni, miniature dello shop). Le immagini pesanti che servono
+// dopo (pagine dei fumetti, immagini grandi dello shop) arrivano in sottofondo a sipario aperto.
 
 (() => {
     const sipario = document.getElementById('intro-curtains');
     if (!sipario) return;
 
-    const MIN_MS = 1200;             // restano chiusi almeno questo tempo, così l'animazione si vede
-    const MAX_MS = 10000;            // se qualcosa è lento, si aprono comunque dopo questo tempo
-    const PRECARICA_TUTTO = false;   // true = carica prima anche copertine, illustrazioni e shop
+    const MIN_MS = 900;              // restano chiusi almeno questo tempo, così l'animazione si vede
+    const MAX_MS = 12000;            // se qualcosa è lento, si aprono comunque dopo questo tempo
+    const SOTTOFONDO = true;         // true = dopo l'apertura scarica in silenzio pagine dei fumetti e immagini dello shop
 
-    // Immagini dell'interfaccia sempre caricate prima di aprire
-    const INTERFACCIA = [
+    const img = f => 'immagini/' + f;
+
+    // Interfaccia + tutto ciò che si vede entrando nelle pagine
+    const urls = new Set([
         'tenda-sopra.png', 'tenda-sinistra.png', 'tenda-destra.png',
         'icona-home.png', 'icona-fumetti.png', 'icona-illustrazioni.png', 'icona-shop.png', 'icona-chisono.png',
         'back-arrow.png', 'libreria-ripiano.png'
-    ].map(f => 'immagini/interfaccia/' + f);
+    ].map(f => 'immagini/interfaccia/' + f));
 
-    const urls = new Set(INTERFACCIA);
+    const sfondo = [];   // da scaricare dopo, a sipario aperto
     if (typeof siteData !== 'undefined') {
-        (siteData.stickers || []).forEach(s => urls.add('immagini/' + s.src));   // la home si vede subito
-        if (PRECARICA_TUTTO) {
-            (siteData.fumetti || []).forEach(f => urls.add('immagini/' + f.copertina));
-            ['illustrazioni', 'shop'].forEach(k => (siteData[k] || []).forEach(x => urls.add('immagini/' + (x.miniatura || x.copertina || x.src))));
-        }
+        (siteData.stickers || []).forEach(s => urls.add(img(s.src)));
+        (siteData.fumetti || []).forEach(f => urls.add(img(f.copertina)));
+        (siteData.illustrazioni || []).forEach(x => urls.add(img(x.src)));
+        (siteData.shop || []).forEach((x, i) => {
+            urls.add(img(x.miniatura || x.copertina || x.src));
+            if (i === 0) urls.add(img(x.src));          // il primo personaggio si apre subito
+            else sfondo.push(img(x.src));
+        });
+        (siteData.chiSono && siteData.chiSono.immagine) && urls.add(img(siteData.chiSono.immagine));
+        (siteData.fumetti || []).forEach(f => (f.pagine || []).forEach(p => sfondo.push(img(p))));
     }
-    const lista = [...urls];
 
-    // Barra di avanzamento (si può togliere: basta cancellare queste righe e .intro-progress nel CSS)
-    const barra = document.createElement('div');
-    barra.className = 'intro-progress';
-    barra.innerHTML = '<span></span>';
-    sipario.appendChild(barra);
-    const setP = p => sipario.style.setProperty('--p', Math.max(0, Math.min(1, p)).toFixed(3));
-    setP(0);
-
-    let fatte = 0, finito = false;
-    const t0 = performance.now();
+    // Scarica e decodifica: quando serve l'immagine è già pronta, niente scatti
     const carica = url => new Promise(res => {
-        const img = new Image();
-        img.onload = img.onerror = () => { fatte++; res(); };   // un file mancante non blocca il sito
-        img.src = url;
+        const i = new Image();
+        i.decoding = 'async';
+        i.src = url;
+        const fine = () => res();                          // un file mancante non blocca il sito
+        if (i.decode) i.decode().then(fine, fine); else i.onload = i.onerror = fine;
     });
 
-    const font = (document.fonts && document.fonts.load) ? document.fonts.load('16px FontSito').catch(() => {}) : Promise.resolve();   // il font è pronto prima di aprire il sipario
-    const assets = Promise.all([...lista.map(carica), font]);
+    const font = (document.fonts && document.fonts.load) ? document.fonts.load('16px FontSito').catch(() => {}) : Promise.resolve();
+    const assets = Promise.all([...urls].map(carica).concat(font));
     const pagina = new Promise(res => document.readyState === 'complete' ? res() : window.addEventListener('load', res, { once: true }));
     const minimo = new Promise(res => setTimeout(res, MIN_MS));
     const massimo = new Promise(res => setTimeout(res, MAX_MS));
 
-    // La barra segue il più lento tra i file caricati e il tempo minimo
-    (function tick() {
-        if (finito) return;
-        const reale = lista.length ? fatte / lista.length : 1;
-        const tempo = (performance.now() - t0) / MIN_MS;
-        setP(Math.min(reale, tempo) * 0.92);
-        requestAnimationFrame(tick);
-    })();
-
     Promise.race([Promise.all([assets, pagina, minimo]), massimo]).then(() => {
-        finito = true;
-        setP(1);
-        setTimeout(() => {
-            sipario.classList.add('loaded');       // la barra sfuma
-            setTimeout(() => sipario.classList.add('open'), 300);   // poi i drappeggi si aprono
-        }, 250);
+        sipario.classList.add('loaded', 'open');
+        if (SOTTOFONDO) setTimeout(scaricaInSottofondo, 1500);
     });
+
+    // Due file alla volta, solo quando il browser è tranquillo (e mai con "risparmio dati")
+    function scaricaInSottofondo() {
+        const c = navigator.connection;
+        if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ''))) return;
+        const coda = sfondo.filter(u => !urls.has(u));
+        const pausa = cb => (window.requestIdleCallback ? requestIdleCallback(cb, { timeout: 1500 }) : setTimeout(cb, 80));
+        let attivi = 0;
+        const prossimo = () => {
+            while (attivi < 2 && coda.length) {
+                attivi++;
+                const i = new Image();
+                i.decoding = 'async';
+                i.onload = i.onerror = () => { attivi--; pausa(prossimo); };
+                i.src = coda.shift();
+            }
+        };
+        prossimo();
+    }
 })();

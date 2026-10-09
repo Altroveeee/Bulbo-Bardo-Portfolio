@@ -109,6 +109,14 @@ function applyRoute() {
 }
 window.addEventListener('hashchange', applyRoute);
 
+// TELEFONO: toccando fuori dal fumetto / dall'illustrazione aperta si torna indietro (come la freccia)
+viewport.addEventListener('click', e => {
+    if (!openState || busy) return;
+    if (!matchMedia('(max-width: 768px), (pointer: coarse)').matches) return;
+    if (e.target.closest('.book, .book-title, .book-desc, .book-counter, .illus-fig, .fullscreen-img, .fullscreen-caption, .back-arrow')) return;
+    closeView();
+});
+
 // MOTORE DI NAVIGAZIONE
 async function navigateTo(page, slug = null) {
     if (openState && openState.categoria === page && !slug && document.querySelector('.fullscreen-view')) { closeView(); return; }
