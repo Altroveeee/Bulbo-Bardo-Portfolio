@@ -77,8 +77,17 @@ body:has(.book-view) { background: #000; }
 /* Su touch (telefoni, anche in orizzontale) la descrizione è sempre a una colonna sola */
 @media (pointer: coarse) { .book-desc { column-count: 1; column-gap: 0; } }
 
-/* LAYOUT MOBILE: Demolizione delle colonne e ritorno all'ordine verticale */
+/* Fino a 1024px (telefoni in orizzontale, tablet stretti) titolo / libro / descrizione stanno in colonna */
 @media (max-width: 1024px) {
+    .book-scene { flex-direction: column; justify-content: center; gap: 3vh; }
+    .book-title, .book-counter, .book-desc { position: relative; top: auto; bottom: auto; left: auto; right: auto; transform: none; }
+    .book-title { width: 90vw; max-width: none; text-align: center; font-size: 1.2rem; }
+    .book-counter { font-size: 0.9rem; margin-top: -1vh; }
+    .book-desc { width: 58vw; max-width: none; max-height: 25vh; text-align: center; font-size: 0.85rem; column-count: 1; column-gap: 0; }
+}
+
+/* LAYOUT MOBILE: Demolizione delle colonne e ritorno all'ordine verticale */
+@media (max-width: 768px) {
     .gallery-grid.cat-fumetti { 
         --row: clamp(120px, 22vh, 190px); 
         grid-template-columns: repeat(2, 1fr); 

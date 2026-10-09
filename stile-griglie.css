@@ -13,6 +13,6 @@
 .gallery-grid .gallery-item { flex: 0 0 var(--item-w); height: var(--row); }
 
 /* Telefono: due fumetti per ripiano */
-@media (max-width: 660px) {
-    .gallery-grid.cat-fumetti { --item-w: calc((100% - 12px) / 2); }
+@media (max-width: 768px) {
+    .gallery-grid.cat-fumetti { --item-w: calc((100% - 14px) / 2); column-gap: 14px; }   /* 14px = lo spazio tra le due colonne: ne entrano sempre 2 */
 }
